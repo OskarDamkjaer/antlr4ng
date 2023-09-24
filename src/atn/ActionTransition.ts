@@ -8,20 +8,30 @@ import { Transition } from "./Transition.js";
 import { TransitionType } from "./TransitionType.js";
 
 export class ActionTransition extends Transition {
-    constructor(target, ruleIndex, actionIndex, isCtxDependent) {
-        super(target);
-        this.serializationType = TransitionType.ACTION;
-        this.ruleIndex = ruleIndex;
-        this.actionIndex = actionIndex === undefined ? -1 : actionIndex;
-        this.isCtxDependent = isCtxDependent === undefined ? false : isCtxDependent; // e.g., $i ref in pred
-        this.isEpsilon = true;
-    }
+  actionIndex: any;
+  isCtxDependent: any;
+  isEpsilon: any;
+  ruleIndex: any;
+  serializationType: any;
+  constructor(
+    target: any,
+    ruleIndex: any,
+    actionIndex: any,
+    isCtxDependent: any
+  ) {
+    super(target);
+    this.serializationType = TransitionType.ACTION;
+    this.ruleIndex = ruleIndex;
+    this.actionIndex = actionIndex === undefined ? -1 : actionIndex;
+    this.isCtxDependent = isCtxDependent === undefined ? false : isCtxDependent; // e.g., $i ref in pred
+    this.isEpsilon = true;
+  }
 
-    matches(symbol, minVocabSymbol, maxVocabSymbol) {
-        return false;
-    }
+  matches(symbol: any, minVocabSymbol: any, maxVocabSymbol: any) {
+    return false;
+  }
 
-    toString() {
-        return "action_" + this.ruleIndex + ":" + this.actionIndex;
-    }
+  toString() {
+    return "action_" + this.ruleIndex + ":" + this.actionIndex;
+  }
 }

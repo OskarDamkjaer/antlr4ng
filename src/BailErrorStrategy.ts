@@ -37,36 +37,36 @@ import { DefaultErrorStrategy } from "./DefaultErrorStrategy.js";
  * @see Parser//setErrorHandler(ANTLRErrorStrategy)
  * */
 export class BailErrorStrategy extends DefaultErrorStrategy {
+  constructor() {
+    super();
+  }
 
-    constructor() {
-        super();
+  /**
+   * Instead of recovering from exception {@code e}, re-throw it wrapped
+   * in a {@link ParseCancellationException} so it is not caught by the
+   * rule function catches. Use {@link Exception//getCause()} to get the
+   * original {@link RecognitionException}.
+   */
+  recover(recognizer: any, e: any) {
+    let context = recognizer._ctx;
+    while (context !== null) {
+      context.exception = e;
+      context = context.parent;
     }
+    // @ts-expect-error TS(2554): Expected 0 arguments, but got 1.
+    throw new ParseCancellationException(e);
+  }
 
-    /**
-     * Instead of recovering from exception {@code e}, re-throw it wrapped
-     * in a {@link ParseCancellationException} so it is not caught by the
-     * rule function catches. Use {@link Exception//getCause()} to get the
-     * original {@link RecognitionException}.
-     */
-    recover(recognizer, e) {
-        let context = recognizer._ctx;
-        while (context !== null) {
-            context.exception = e;
-            context = context.parent;
-        }
-        throw new ParseCancellationException(e);
-    }
+  /**
+   * Make sure we don't attempt to recover inline; if the parser
+   * successfully recovers, it won't throw an exception.
+   */
+  recoverInline(recognizer: any) {
+    this.recover(recognizer, new InputMismatchException(recognizer));
+  }
 
-    /**
-     * Make sure we don't attempt to recover inline; if the parser
-     * successfully recovers, it won't throw an exception.
-     */
-    recoverInline(recognizer) {
-        this.recover(recognizer, new InputMismatchException(recognizer));
-    }
-
-    // Make sure we don't attempt to recover from problems in subrules.//
-    sync(recognizer) {
-        // pass
-    }
+  // Make sure we don't attempt to recover from problems in subrules.//
+  sync(recognizer: any) {
+    // pass
+  }
 }

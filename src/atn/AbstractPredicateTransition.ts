@@ -4,10 +4,11 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
+import { ATNState } from "./ATNState.js";
 import { Transition } from "./Transition.js";
 
 export class AbstractPredicateTransition extends Transition {
-    constructor(target) {
-        super(target);
-    }
+  public constructor(target: ATNState) {
+    super(target);
+  }
 }
