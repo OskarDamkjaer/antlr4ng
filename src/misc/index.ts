@@ -4,5 +4,5 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-export { Interval } from './Interval.js';
-export { IntervalSet } from './IntervalSet.js';
+export { Interval } from "./Interval.js";
+export { IntervalSet } from "./IntervalSet.js";

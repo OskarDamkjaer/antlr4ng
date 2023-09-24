@@ -5,19 +5,20 @@
  */
 
 export class AltDict {
+    data: any;
     constructor() {
         this.data = {};
     }
 
-    get(key) {
+    get(key: any) {
         return this.data["k-" + key] || null;
     }
 
-    set(key, value) {
+    set(key: any, value: any) {
         this.data["k-" + key] = value;
     }
 
     values() {
-        return Object.keys(this.data).filter(key => key.startsWith("k-")).map(key => this.data[key], this);
+        return Object.keys(this.data).filter((key) => {return key.startsWith("k-");}).map((key) => {return this.data[key];}, this);
     }
 }

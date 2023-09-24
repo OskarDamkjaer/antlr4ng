@@ -4,34 +4,34 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { NoViableAltException } from '../NoViableAltException.js';
-import { Token } from '../Token.js';
-import { DFAState } from '../dfa/DFAState.js';
-import { PredPrediction } from '../dfa/PredPrediction.js';
+import { NoViableAltException } from "../NoViableAltException.js";
+import { Token } from "../Token.js";
+import { DFAState } from "../dfa/DFAState.js";
+import { PredPrediction } from "../dfa/PredPrediction.js";
 import { BitSet } from "../misc/BitSet.js";
 import { HashSet } from "../misc/HashSet.js";
-import { Interval } from '../misc/Interval.js';
+import { Interval } from "../misc/Interval.js";
 import { DoubleDict } from "../utils/DoubleDict.js";
 import { arrayToString } from "../utils/arrayToString.js";
-import { ATN } from './ATN.js';
-import { ATNConfig } from './ATNConfig.js';
-import { ATNConfigSet } from './ATNConfigSet.js';
-import { ATNSimulator } from './ATNSimulator.js';
+import { ATN } from "./ATN.js";
+import { ATNConfig } from "./ATNConfig.js";
+import { ATNConfigSet } from "./ATNConfigSet.js";
+import { ATNSimulator } from "./ATNSimulator.js";
 import { ATNStateType } from "./ATNStateType.js";
-import { ActionTransition } from './ActionTransition.js';
+import { ActionTransition } from "./ActionTransition.js";
 import { AtomTransition } from "./AtomTransition.js";
-import { NotSetTransition } from './NotSetTransition.js';
-import { PredictionContext } from './PredictionContext.js';
-import { predictionContextFromRuleContext } from './PredictionContextUtils.js';
-import { PredictionMode } from './PredictionMode.js';
-import { RuleContext } from './RuleContext.js';
-import { RuleStopState } from './RuleStopState.js';
-import { RuleTransition } from './RuleTransition.js';
-import { SemanticContext } from './SemanticContext.js';
-import { SetTransition } from './SetTransition.js';
-import { SingletonPredictionContext } from './SingletonPredictionContext.js';
-import { TransitionType } from './TransitionType.js';
-import { Vocabulary } from '../Vocabulary.js';
+import { NotSetTransition } from "./NotSetTransition.js";
+import { PredictionContext } from "./PredictionContext.js";
+import { predictionContextFromRuleContext } from "./PredictionContextUtils.js";
+import { PredictionMode } from "./PredictionMode.js";
+import { RuleContext } from "./RuleContext.js";
+import { RuleStopState } from "./RuleStopState.js";
+import { RuleTransition } from "./RuleTransition.js";
+import { SemanticContext } from "./SemanticContext.js";
+import { SetTransition } from "./SetTransition.js";
+import { SingletonPredictionContext } from "./SingletonPredictionContext.js";
+import { TransitionType } from "./TransitionType.js";
+import { Vocabulary } from "../Vocabulary.js";
 
 /**
  * The embodiment of the adaptive LL(*), ALL(*), parsing strategy.
@@ -261,7 +261,21 @@ import { Vocabulary } from '../Vocabulary.js';
  * the input.</p>
  */
 export class ParserATNSimulator extends ATNSimulator {
-    constructor(parser, atn, decisionToDFA, sharedContextCache) {
+    _dfa: any;
+    _input: any;
+    _outerContext: any;
+    _startIndex: any;
+    debug: any;
+    debug_add: any;
+    debug_closure: any;
+    decisionToDFA: any;
+    dfa_debug: any;
+    mergeCache: any;
+    parser: any;
+    predictionMode: any;
+    retry_debug: any;
+    trace_atn_sim: any;
+    constructor(parser: any, atn: any, decisionToDFA: any, sharedContextCache: any) {
         super(atn, sharedContextCache);
         this.parser = parser;
         this.decisionToDFA = decisionToDFA;
@@ -292,7 +306,7 @@ export class ParserATNSimulator extends ATNSimulator {
 
     reset() { }
 
-    adaptivePredict(input, decision, outerContext) {
+    adaptivePredict(input: any, decision: any, outerContext: any) {
         if (this.debug || this.trace_atn_sim) {
             console.log("adaptivePredict decision " + decision +
                 " exec LA(1)==" + this.getLookaheadName(input) +
@@ -322,6 +336,7 @@ export class ParserATNSimulator extends ATNSimulator {
             }
             if (s0 === null) {
                 if (outerContext === null) {
+                    // @ts-expect-error TS(2339): Property 'EMPTY' does not exist on type 'typeof Ru... Remove this comment to see the full error message
                     outerContext = RuleContext.EMPTY;
                 }
                 if (this.debug) {
@@ -331,6 +346,7 @@ export class ParserATNSimulator extends ATNSimulator {
                 }
 
                 const fullCtx = false;
+                // @ts-expect-error TS(2339): Property 'EMPTY' does not exist on type 'typeof Ru... Remove this comment to see the full error message
                 let s0_closure = this.computeStartState(dfa.atnStartState, RuleContext.EMPTY, fullCtx);
 
                 if (dfa.precedenceDfa) {
@@ -353,6 +369,7 @@ export class ParserATNSimulator extends ATNSimulator {
             if (this.debug) {
                 console.log("DFA after predictATN: " + dfa.toString(this.parser.vocabulary));
             }
+
             return alt;
         } finally {
             this._dfa = null;
@@ -393,8 +410,13 @@ export class ParserATNSimulator extends ATNSimulator {
      *    conflict
      *    conflict + preds
      *
+     * @param dfa
+     * @param s0
+     * @param input
+     * @param startIndex
+     * @param outerContext
      */
-    execATN(dfa, s0, input, startIndex, outerContext) {
+    execATN(dfa: any, s0: any, input: any, startIndex: any, outerContext: any) {
         if (this.debug || this.trace_atn_sim) {
             console.log("execATN decision " + dfa.decision +
                 ", DFA state " + s0 +
@@ -413,6 +435,7 @@ export class ParserATNSimulator extends ATNSimulator {
             if (D === null) {
                 D = this.computeTargetState(dfa, previousD, t);
             }
+            // @ts-expect-error TS(2339): Property 'ERROR' does not exist on type 'typeof AT... Remove this comment to see the full error message
             if (D === ATNSimulator.ERROR) {
                 // if any configs in previous dipped into outer context, that
                 // means that input up to t actually finished entry rule
@@ -426,6 +449,7 @@ export class ParserATNSimulator extends ATNSimulator {
                 const e = this.noViableAlt(input, outerContext, previousD.configs, startIndex);
                 input.seek(startIndex);
                 alt = this.getSynValidOrSemInvalidAltThatFinishedDecisionEntryRule(previousD.configs, outerContext);
+                // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
                 if (alt !== ATN.INVALID_ALT_NUMBER) {
                     return alt;
                 } else {
@@ -448,6 +472,7 @@ export class ParserATNSimulator extends ATNSimulator {
                         if (this.debug) {
                             console.log("Full LL avoided");
                         }
+
                         return conflictingAlts.nextSetBit(0);
                     }
                     if (conflictIndex !== startIndex) {
@@ -463,6 +488,7 @@ export class ParserATNSimulator extends ATNSimulator {
                 const s0_closure = this.computeStartState(dfa.atnStartState, outerContext, fullCtx);
                 this.reportAttemptingFullContext(dfa, conflictingAlts, D.configs, startIndex, input.index);
                 alt = this.execATNWithFullContext(dfa, D, s0_closure, input, startIndex, outerContext);
+
                 return alt;
             }
             if (D.isAcceptState) {
@@ -479,11 +505,13 @@ export class ParserATNSimulator extends ATNSimulator {
                 } else {
                     // report ambiguity after predicate evaluation to make sure the correct set of ambig alts is reported.
                     this.reportAmbiguity(dfa, D, startIndex, stopIndex, false, alts, D.configs);
+
                     return alts.nextSetBit(0);
                 }
             }
             previousD = D;
 
+            // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
             if (t !== Token.EOF) {
                 input.consume();
                 t = input.LA(1);
@@ -498,11 +526,11 @@ export class ParserATNSimulator extends ATNSimulator {
      *
      * @param previousD The current DFA state
      * @param t The next input symbol
-     * @return The existing target DFA state for the given input symbol
+     * @returns The existing target DFA state for the given input symbol
      * {@code t}, or {@code null} if the target state for this edge is not
      * already cached
      */
-    getExistingTargetState(previousD, t) {
+    getExistingTargetState(previousD: any, t: any) {
         const edges = previousD.edges;
         if (edges === null) {
             return null;
@@ -519,14 +547,17 @@ export class ParserATNSimulator extends ATNSimulator {
      * @param previousD The current DFA state
      * @param t The next input symbol
      *
-     * @return The computed target DFA state for the given input symbol
+     * @returns The computed target DFA state for the given input symbol
      * {@code t}. If {@code t} does not lead to a valid DFA state, this method
      * returns {@link //ERROR
      */
-    computeTargetState(dfa, previousD, t) {
+    computeTargetState(dfa: any, previousD: any, t: any) {
         const reach = this.computeReachSet(previousD.configs, t, false);
         if (reach === null) {
+            // @ts-expect-error TS(2339): Property 'ERROR' does not exist on type 'typeof AT... Remove this comment to see the full error message
             this.addDFAEdge(dfa, previousD, t, ATNSimulator.ERROR);
+
+            // @ts-expect-error TS(2339): Property 'ERROR' does not exist on type 'typeof AT... Remove this comment to see the full error message
             return ATNSimulator.ERROR;
         }
         // create new target state; we'll add to DFA after it's complete
@@ -544,6 +575,7 @@ export class ParserATNSimulator extends ATNSimulator {
                 PredictionMode.allSubsetsConflict(altSubSets) + ", conflictingAlts=" +
                 this.getConflictingAlts(reach));
         }
+        // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
         if (predictedAlt !== ATN.INVALID_ALT_NUMBER) {
             // NO CONFLICT, UNIQUELY PREDICTED ALT
             D.isAcceptState = true;
@@ -560,15 +592,17 @@ export class ParserATNSimulator extends ATNSimulator {
         if (D.isAcceptState && D.configs.hasSemanticContext) {
             this.predicateDFAState(D, this.atn.getDecisionState(dfa.decision));
             if (D.predicates !== null) {
+                // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
                 D.prediction = ATN.INVALID_ALT_NUMBER;
             }
         }
         // all adds to dfa are done after we've created full D state
         D = this.addDFAEdge(dfa, previousD, t, D);
+
         return D;
     }
 
-    predicateDFAState(dfaState, decisionState) {
+    predicateDFAState(dfaState: any, decisionState: any) {
         // We need to test all predicates, even in DFA states that
         // uniquely predict alternative.
         const nalts = decisionState.transitions.length;
@@ -578,6 +612,7 @@ export class ParserATNSimulator extends ATNSimulator {
         const altToPred = this.getPredsForAmbigAlts(altsToCollectPredsFrom, dfaState.configs, nalts);
         if (altToPred !== null) {
             dfaState.predicates = this.getPredicatePredictions(altsToCollectPredsFrom, altToPred);
+            // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
             dfaState.prediction = ATN.INVALID_ALT_NUMBER; // make sure we use preds
         } else {
             // There are preds in configs but they might go away
@@ -588,11 +623,11 @@ export class ParserATNSimulator extends ATNSimulator {
     }
 
     // comes back with reach.uniqueAlt set to a valid alt
-    execATNWithFullContext(dfa, D, // how far we got before failing over
-        s0,
-        input,
-        startIndex,
-        outerContext) {
+    execATNWithFullContext(dfa: any, D: any, // how far we got before failing over
+        s0: any,
+        input: any,
+        startIndex: any,
+        outerContext: any) {
         if (this.debug || this.trace_atn_sim) {
             console.log("execATNWithFullContext " + s0);
         }
@@ -618,6 +653,7 @@ export class ParserATNSimulator extends ATNSimulator {
                 const e = this.noViableAlt(input, outerContext, previous, startIndex);
                 input.seek(startIndex);
                 const alt = this.getSynValidOrSemInvalidAltThatFinishedDecisionEntryRule(previous, outerContext);
+                // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
                 if (alt !== ATN.INVALID_ALT_NUMBER) {
                     return alt;
                 } else {
@@ -632,11 +668,13 @@ export class ParserATNSimulator extends ATNSimulator {
             }
             reach.uniqueAlt = this.getUniqueAlt(reach);
             // unique prediction?
+            // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
             if (reach.uniqueAlt !== ATN.INVALID_ALT_NUMBER) {
                 predictedAlt = reach.uniqueAlt;
                 break;
             } else if (this.predictionMode !== PredictionMode.LL_EXACT_AMBIG_DETECTION) {
                 predictedAlt = PredictionMode.resolvesToJustOneViableAlt(altSubSets);
+                // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
                 if (predictedAlt !== ATN.INVALID_ALT_NUMBER) {
                     break;
                 }
@@ -653,6 +691,7 @@ export class ParserATNSimulator extends ATNSimulator {
                 // So, keep going.
             }
             previous = reach;
+            // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
             if (t !== Token.EOF) {
                 input.consume();
                 t = input.LA(1);
@@ -661,8 +700,10 @@ export class ParserATNSimulator extends ATNSimulator {
         // If the configuration set uniquely predicts an alternative,
         // without conflict, then we know that it's a full LL decision
         // not SLL.
+        // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
         if (reach.uniqueAlt !== ATN.INVALID_ALT_NUMBER) {
             this.reportContextSensitivity(dfa, predictedAlt, reach, startIndex, input.index);
+
             return predictedAlt;
         }
         // We do not check predicates here because we have checked them
@@ -697,11 +738,12 @@ export class ParserATNSimulator extends ATNSimulator {
         return predictedAlt;
     }
 
-    computeReachSet(closure, t, fullCtx) {
+    computeReachSet(closure: any, t: any, fullCtx: any) {
         if (this.debug) {
             console.log("in computeReachSet, starting closure: " + closure);
         }
         if (this.mergeCache === null) {
+            // @ts-expect-error TS(2554): Expected 1 arguments, but got 0.
             this.mergeCache = new DoubleDict();
         }
         const intermediate = new ATNConfigSet(fullCtx);
@@ -725,6 +767,7 @@ export class ParserATNSimulator extends ATNSimulator {
                 console.log("testing " + this.getTokenName(t) + " at " + c);
             }
             if (c.state instanceof RuleStopState) {
+                // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
                 if (fullCtx || t === Token.EOF) {
                     if (skippedStopStates === null) {
                         skippedStopStates = [];
@@ -760,6 +803,7 @@ export class ParserATNSimulator extends ATNSimulator {
         // condition is not true when one or more configurations have been
         // withheld in skippedStopStates, or when the current symbol is EOF.
         //
+        // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
         if (skippedStopStates === null && t !== Token.EOF) {
             if (intermediate.items.length === 1) {
                 // Don't pursue the closure if there is just one state.
@@ -767,6 +811,7 @@ export class ParserATNSimulator extends ATNSimulator {
                 // Also don't pursue the closure if there is unique alternative
                 // among the configurations.
                 reach = intermediate;
+            // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
             } else if (this.getUniqueAlt(intermediate) !== ATN.INVALID_ALT_NUMBER) {
                 // Also don't pursue the closure if there is unique alternative
                 // among the configurations.
@@ -778,12 +823,15 @@ export class ParserATNSimulator extends ATNSimulator {
         //
         if (reach === null) {
             reach = new ATNConfigSet(fullCtx);
+            // @ts-expect-error TS(2554): Expected 2 arguments, but got 0.
             const closureBusy = new HashSet();
+            // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
             const treatEofAsEpsilon = t === Token.EOF;
             for (let k = 0; k < intermediate.items.length; k++) {
                 this.closure(intermediate.items[k], reach, closureBusy, false, fullCtx, treatEofAsEpsilon);
             }
         }
+        // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
         if (t === Token.EOF) {
             // After consuming EOF no additional input is possible, so we are
             // only interested in configurations which reached the end of the
@@ -845,11 +893,11 @@ export class ParserATNSimulator extends ATNSimulator {
      * reachable by epsilon-only transitions from each configuration in
      * {@code configs}.
      *
-     * @return {@code configs} if all configurations in {@code configs} are in a
+     * @returns {@code configs} if all configurations in {@code configs} are in a
      * rule stop state, otherwise return a new configuration set containing only
      * the configurations from {@code configs} which are in a rule stop state
      */
-    removeAllConfigsNotInRuleStopState(configs, lookToEndOfRule) {
+    removeAllConfigsNotInRuleStopState(configs: any, lookToEndOfRule: any) {
         if (PredictionMode.allConfigsInRuleStopStates(configs)) {
             return configs;
         }
@@ -862,16 +910,18 @@ export class ParserATNSimulator extends ATNSimulator {
             }
             if (lookToEndOfRule && config.state.epsilonOnlyTransitions) {
                 const nextTokens = this.atn.nextTokens(config.state);
+                // @ts-expect-error TS(2339): Property 'EPSILON' does not exist on type 'typeof ... Remove this comment to see the full error message
                 if (nextTokens.contains(Token.EPSILON)) {
                     const endOfRuleState = this.atn.ruleToStopState[config.state.ruleIndex];
                     result.add(new ATNConfig({ state: endOfRuleState }, config), this.mergeCache);
                 }
             }
         }
+
         return result;
     }
 
-    computeStartState(p, ctx, fullCtx) {
+    computeStartState(p: any, ctx: any, fullCtx: any) {
         // always at least the implicit call to start rule
         const initialContext = predictionContextFromRuleContext(this.atn, ctx);
         const configs = new ATNConfigSet(fullCtx);
@@ -883,9 +933,11 @@ export class ParserATNSimulator extends ATNSimulator {
         for (let i = 0; i < p.transitions.length; i++) {
             const target = p.transitions[i].target;
             const c = new ATNConfig({ state: target, alt: i + 1, context: initialContext }, null);
+            // @ts-expect-error TS(2554): Expected 2 arguments, but got 0.
             const closureBusy = new HashSet();
             this.closure(c, configs, closureBusy, true, fullCtx, false);
         }
+
         return configs;
     }
 
@@ -941,11 +993,11 @@ export class ParserATNSimulator extends ATNSimulator {
      *
      * @param configs The configuration set computed by
      * {@link //computeStartState} as the start state for the DFA.
-     * @return The transformed configuration set representing the start state
+     * @returns The transformed configuration set representing the start state
      * for a precedence DFA at a particular precedence level (determined by
      * calling {@link Parser//getPrecedence})
      */
-    applyPrecedenceFilter(configs) {
+    applyPrecedenceFilter(configs: any) {
         let config;
         const statesFromAlt1 = [];
         const configSet = new ATNConfigSet(configs.fullCtx);
@@ -985,10 +1037,11 @@ export class ParserATNSimulator extends ATNSimulator {
             }
             configSet.add(config, this.mergeCache);
         }
+
         return configSet;
     }
 
-    getReachableTarget(trans, ttype) {
+    getReachableTarget(trans: any, ttype: any) {
         if (trans.matches(ttype, 0, this.atn.maxTokenType)) {
             return trans.target;
         } else {
@@ -996,7 +1049,7 @@ export class ParserATNSimulator extends ATNSimulator {
         }
     }
 
-    getPredsForAmbigAlts(ambigAlts, configs, nalts) {
+    getPredsForAmbigAlts(ambigAlts: any, configs: any, nalts: any) {
         // REACH=[1|1|[]|0:0, 1|2|[]|0:1]
         // altToPred starts as an array of all null contexts. The entry at index i
         // corresponds to alternative i. altToPred[i] may have one of three values:
@@ -1009,7 +1062,7 @@ export class ParserATNSimulator extends ATNSimulator {
         //
         // From this, it is clear that NONE||anything==NONE.
         //
-        let altToPred = [];
+        let altToPred: any = [];
         for (let i = 0; i < configs.items.length; i++) {
             const c = configs.items[i];
             if (ambigAlts.get(c.alt)) {
@@ -1020,7 +1073,9 @@ export class ParserATNSimulator extends ATNSimulator {
         for (let i = 1; i < nalts + 1; i++) {
             const pred = altToPred[i] || null;
             if (pred === null) {
+                // @ts-expect-error TS(2339): Property 'NONE' does not exist on type 'typeof Sem... Remove this comment to see the full error message
                 altToPred[i] = SemanticContext.NONE;
+            // @ts-expect-error TS(2339): Property 'NONE' does not exist on type 'typeof Sem... Remove this comment to see the full error message
             } else if (pred !== SemanticContext.NONE) {
                 nPredAlts += 1;
             }
@@ -1032,10 +1087,11 @@ export class ParserATNSimulator extends ATNSimulator {
         if (this.debug) {
             console.log("getPredsForAmbigAlts result " + arrayToString(altToPred));
         }
+
         return altToPred;
     }
 
-    getPredicatePredictions(ambigAlts, altToPred) {
+    getPredicatePredictions(ambigAlts: any, altToPred: any) {
         const pairs = [];
         let containsPredicate = false;
         for (let i = 1; i < altToPred.length; i++) {
@@ -1044,6 +1100,7 @@ export class ParserATNSimulator extends ATNSimulator {
             if (ambigAlts !== null && ambigAlts.get(i)) {
                 pairs.push(new PredPrediction(pred, i));
             }
+            // @ts-expect-error TS(2339): Property 'NONE' does not exist on type 'typeof Sem... Remove this comment to see the full error message
             if (pred !== SemanticContext.NONE) {
                 containsPredicate = true;
             }
@@ -1051,6 +1108,7 @@ export class ParserATNSimulator extends ATNSimulator {
         if (!containsPredicate) {
             return null;
         }
+
         return pairs;
     }
 
@@ -1096,29 +1154,33 @@ export class ParserATNSimulator extends ATNSimulator {
      * @param outerContext The is the \gamma_0 initial parser context from the paper
      * or the parser stack at the instant before prediction commences.
      *
-     * @return The value to return from {@link //adaptivePredict}, or
+     * @returns The value to return from {@link //adaptivePredict}, or
      * {@link ATN//INVALID_ALT_NUMBER} if a suitable alternative was not
      * identified and {@link //adaptivePredict} should report an error instead
      */
-    getSynValidOrSemInvalidAltThatFinishedDecisionEntryRule(configs, outerContext) {
+    getSynValidOrSemInvalidAltThatFinishedDecisionEntryRule(configs: any, outerContext: any) {
         const cfgs = this.splitAccordingToSemanticValidity(configs, outerContext);
         const semValidConfigs = cfgs[0];
         const semInvalidConfigs = cfgs[1];
         let alt = this.getAltThatFinishedDecisionEntryRule(semValidConfigs);
+        // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
         if (alt !== ATN.INVALID_ALT_NUMBER) { // semantically/syntactically viable path exists
             return alt;
         }
         // Is there a syntactically valid path with a failed pred?
         if (semInvalidConfigs.items.length > 0) {
             alt = this.getAltThatFinishedDecisionEntryRule(semInvalidConfigs);
+            // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
             if (alt !== ATN.INVALID_ALT_NUMBER) { // syntactically viable path exists
                 return alt;
             }
         }
+
+        // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
         return ATN.INVALID_ALT_NUMBER;
     }
 
-    getAltThatFinishedDecisionEntryRule(configs) {
+    getAltThatFinishedDecisionEntryRule(configs: any) {
         const alts = [];
         for (let i = 0; i < configs.items.length; i++) {
             const c = configs.items[i];
@@ -1129,6 +1191,7 @@ export class ParserATNSimulator extends ATNSimulator {
             }
         }
         if (alts.length === 0) {
+            // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
             return ATN.INVALID_ALT_NUMBER;
         } else {
             return Math.min.apply(null, alts);
@@ -1143,23 +1206,32 @@ export class ParserATNSimulator extends ATNSimulator {
      * Create a new set so as not to alter the incoming parameter.
      *
      * Assumption: the input stream has been restored to the starting point
-     * prediction, which is where predicates need to evaluate.*/
-    splitAccordingToSemanticValidity(configs, outerContext) {
+     * prediction, which is where predicates need to evaluate.
+     *
+     * @param configs
+     * @param outerContext
+     */
+    splitAccordingToSemanticValidity(configs: any, outerContext: any) {
         const succeeded = new ATNConfigSet(configs.fullCtx);
         const failed = new ATNConfigSet(configs.fullCtx);
         for (let i = 0; i < configs.items.length; i++) {
             const c = configs.items[i];
+            // @ts-expect-error TS(2339): Property 'NONE' does not exist on type 'typeof Sem... Remove this comment to see the full error message
             if (c.semanticContext !== SemanticContext.NONE) {
                 const predicateEvaluationResult = c.semanticContext.evaluate(this.parser, outerContext);
                 if (predicateEvaluationResult) {
+                    // @ts-expect-error TS(2554): Expected 2 arguments, but got 1.
                     succeeded.add(c);
                 } else {
+                    // @ts-expect-error TS(2554): Expected 2 arguments, but got 1.
                     failed.add(c);
                 }
             } else {
+                // @ts-expect-error TS(2554): Expected 2 arguments, but got 1.
                 succeeded.add(c);
             }
         }
+
         return [succeeded, failed];
     }
 
@@ -1169,11 +1241,16 @@ export class ParserATNSimulator extends ATNSimulator {
      * unpredicated config which behaves as "always true." If !complete
      * then we stop at the first predicate that evaluates to true. This
      * includes pairs with null predicates.
+     *
+     * @param predPredictions
+     * @param outerContext
+     * @param complete
      */
-    evalSemanticContext(predPredictions, outerContext, complete) {
+    evalSemanticContext(predPredictions: any, outerContext: any, complete: any) {
         const predictions = new BitSet();
         for (let i = 0; i < predPredictions.length; i++) {
             const pair = predPredictions[i];
+            // @ts-expect-error TS(2339): Property 'NONE' does not exist on type 'typeof Sem... Remove this comment to see the full error message
             if (pair.pred === SemanticContext.NONE) {
                 predictions.set(pair.alt);
                 if (!complete) {
@@ -1195,6 +1272,7 @@ export class ParserATNSimulator extends ATNSimulator {
                 }
             }
         }
+
         return predictions;
     }
 
@@ -1204,13 +1282,13 @@ export class ParserATNSimulator extends ATNSimulator {
     //     waste to pursue the closure. Might have to advance when we do
     //     ambig detection thought :(
     //
-    closure(config, configs, closureBusy, collectPredicates, fullCtx, treatEofAsEpsilon) {
+    closure(config: any, configs: any, closureBusy: any, collectPredicates: any, fullCtx: any, treatEofAsEpsilon: any) {
         const initialDepth = 0;
         this.closureCheckingStopState(config, configs, closureBusy, collectPredicates,
             fullCtx, initialDepth, treatEofAsEpsilon);
     }
 
-    closureCheckingStopState(config, configs, closureBusy, collectPredicates, fullCtx, depth, treatEofAsEpsilon) {
+    closureCheckingStopState(config: any, configs: any, closureBusy: any, collectPredicates: any, fullCtx: any, depth: any, treatEofAsEpsilon: any) {
         if (this.trace_atn_sim || this.debug_closure) {
             console.log("closure(" + config.toString(this.parser, true) + ")");
         }
@@ -1219,8 +1297,10 @@ export class ParserATNSimulator extends ATNSimulator {
             // run thru all possible stack tops in ctx
             if (!config.context.isEmpty()) {
                 for (let i = 0; i < config.context.length; i++) {
+                    // @ts-expect-error TS(2339): Property 'EMPTY_RETURN_STATE' does not exist on ty... Remove this comment to see the full error message
                     if (config.context.getReturnState(i) === PredictionContext.EMPTY_RETURN_STATE) {
                         if (fullCtx) {
+                            // @ts-expect-error TS(2339): Property 'EMPTY' does not exist on type 'typeof Pr... Remove this comment to see the full error message
                             configs.add(new ATNConfig({ state: config.state, context: PredictionContext.EMPTY }, config), this.mergeCache);
                             continue;
                         } else {
@@ -1243,10 +1323,12 @@ export class ParserATNSimulator extends ATNSimulator {
                     c.reachesIntoOuterContext = config.reachesIntoOuterContext;
                     this.closureCheckingStopState(c, configs, closureBusy, collectPredicates, fullCtx, depth - 1, treatEofAsEpsilon);
                 }
+
                 return;
             } else if (fullCtx) {
                 // reached end of start rule
                 configs.add(config, this.mergeCache);
+
                 return;
             } else {
                 // else if we have no context info, just chase follow links (if greedy)
@@ -1259,7 +1341,7 @@ export class ParserATNSimulator extends ATNSimulator {
     }
 
     // Do the actual work of walking epsilon edges//
-    closure_(config, configs, closureBusy, collectPredicates, fullCtx, depth, treatEofAsEpsilon) {
+    closure_(config: any, configs: any, closureBusy: any, collectPredicates: any, fullCtx: any, depth: any, treatEofAsEpsilon: any) {
         const p = config.state;
         // optimization
         if (!p.epsilonOnlyTransitions) {
@@ -1269,7 +1351,7 @@ export class ParserATNSimulator extends ATNSimulator {
         }
         for (let i = 0; i < p.transitions.length; i++) {
             if (i === 0 && this.canDropLoopEntryEdgeInLeftRecursiveRule(config))
-                continue;
+                {continue;}
 
             const t = p.transitions[i];
             const continueCollecting = collectPredicates && !(t instanceof ActionTransition);
@@ -1315,7 +1397,7 @@ export class ParserATNSimulator extends ATNSimulator {
         }
     }
 
-    canDropLoopEntryEdgeInLeftRecursiveRule(config) {
+    canDropLoopEntryEdgeInLeftRecursiveRule(config: any) {
         // return False
         const p = config.state;
         // First check to see if we are in StarLoopEntryState generated during
@@ -1324,17 +1406,17 @@ export class ParserATNSimulator extends ATNSimulator {
         // global FOLLOW so we can't perform optimization
         // Are we the special loop entry/exit state? or SLL wildcard
         if (p.stateType !== ATNStateType.STAR_LOOP_ENTRY)
-            return false;
+            {return false;}
         if (p.stateType !== ATNStateType.STAR_LOOP_ENTRY || !p.precedenceRuleDecision ||
             config.context.isEmpty() || config.context.hasEmptyPath())
-            return false;
+            {return false;}
 
         // Require all return states to return back to the same rule that p is in.
         const numCtxs = config.context.length;
         for (let i = 0; i < numCtxs; i++) { // for each stack context
             const returnState = this.atn.states[config.context.getReturnState(i)];
             if (returnState.ruleIndex !== p.ruleIndex)
-                return false;
+                {return false;}
         }
 
         const decisionStartState = p.transitions[0].target;
@@ -1348,37 +1430,38 @@ export class ParserATNSimulator extends ATNSimulator {
             const returnState = this.atn.states[returnStateNumber];
             // all states must have single outgoing epsilon edge
             if (returnState.transitions.length !== 1 || !returnState.transitions[0].isEpsilon)
-                return false;
+                {return false;}
 
             // Look for prefix op case like 'not expr', (' type ')' expr
             const returnStateTarget = returnState.transitions[0].target;
             if (returnState.stateType === ATNStateType.BLOCK_END && returnStateTarget === p)
-                continue;
+                {continue;}
 
             // Look for 'expr op expr' or case where expr's return state is block end
             // of (...)* internal block; the block end points to loop back
             // which points to p but we don't need to check that
             if (returnState === blockEndState)
-                continue;
+                {continue;}
 
             // Look for ternary expr ? expr : expr. The return state points at block end,
             // which points at loop entry state
             if (returnStateTarget === blockEndState)
-                continue;
+                {continue;}
 
             // Look for complex prefix 'between expr and expr' case where 2nd expr's
             // return state points at block end state of (...)* internal block
             if (returnStateTarget.stateType === ATNStateType.BLOCK_END && returnStateTarget.transitions.length === 1
                 && returnStateTarget.transitions[0].isEpsilon && returnStateTarget.transitions[0].target === p)
-                continue;
+                {continue;}
 
             // anything else ain't conforming
             return false;
         }
+
         return true;
     }
 
-    getRuleName(index) {
+    getRuleName(index: any) {
         if (this.parser !== null && index >= 0) {
             return this.parser.ruleNames[index];
         } else {
@@ -1386,7 +1469,7 @@ export class ParserATNSimulator extends ATNSimulator {
         }
     }
 
-    getEpsilonTarget(config, t, collectPredicates, inContext, fullCtx, treatEofAsEpsilon) {
+    getEpsilonTarget(config: any, t: any, collectPredicates: any, inContext: any, fullCtx: any, treatEofAsEpsilon: any) {
         switch (t.serializationType) {
             case TransitionType.RULE:
                 return this.ruleTransition(config, t);
@@ -1404,25 +1487,28 @@ export class ParserATNSimulator extends ATNSimulator {
                 // EOF transitions act like epsilon transitions after the first EOF
                 // transition is traversed
                 if (treatEofAsEpsilon) {
+                    // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
                     if (t.matches(Token.EOF, 0, 1)) {
                         return new ATNConfig({ state: t.target }, config);
                     }
                 }
+
                 return null;
             default:
                 return null;
         }
     }
 
-    actionTransition(config, t) {
+    actionTransition(config: any, t: any) {
         if (this.debug) {
             const index = t.actionIndex === -1 ? 65535 : t.actionIndex;
             console.log("ACTION edge " + t.ruleIndex + ":" + index);
         }
+
         return new ATNConfig({ state: t.target }, config);
     }
 
-    precedenceTransition(config, pt, collectPredicates, inContext, fullCtx) {
+    precedenceTransition(config: any, pt: any, collectPredicates: any, inContext: any, fullCtx: any) {
         if (this.debug) {
             console.log("PRED (collectPredicates=" + collectPredicates + ") " +
                 pt.precedence + ">=_p, ctx dependent=true");
@@ -1454,10 +1540,11 @@ export class ParserATNSimulator extends ATNSimulator {
         if (this.debug) {
             console.log("config from pred transition=" + c);
         }
+
         return c;
     }
 
-    predTransition(config, pt, collectPredicates, inContext, fullCtx) {
+    predTransition(config: any, pt: any, collectPredicates: any, inContext: any, fullCtx: any) {
         if (this.debug) {
             console.log("PRED (collectPredicates=" + collectPredicates + ") " + pt.ruleIndex +
                 ":" + pt.predIndex + ", ctx dependent=" + pt.isCtxDependent);
@@ -1489,20 +1576,23 @@ export class ParserATNSimulator extends ATNSimulator {
         if (this.debug) {
             console.log("config from pred transition=" + c);
         }
+
         return c;
     }
 
-    ruleTransition(config, t) {
+    ruleTransition(config: any, t: any) {
         if (this.debug) {
             console.log("CALL rule " + this.getRuleName(t.target.ruleIndex) + ", ctx=" + config.context);
         }
         const returnState = t.followState;
         const newContext = SingletonPredictionContext.create(config.context, returnState.stateNumber);
+
         return new ATNConfig({ state: t.target, context: newContext }, config);
     }
 
-    getConflictingAlts(configs) {
+    getConflictingAlts(configs: any) {
         const altsets = PredictionMode.getConflictingAltSubsets(configs);
+
         return PredictionMode.getAlts(altsets);
     }
 
@@ -1541,23 +1631,29 @@ export class ParserATNSimulator extends ATNSimulator {
      * looking for input reasonably, I don't declare the state done. We
      * ignore a set of conflicting alts when we have an alternative
      * that we still need to pursue
+     *
+     * @param configs
      */
-    getConflictingAltsOrUniqueAlt(configs) {
+    getConflictingAltsOrUniqueAlt(configs: any) {
         let conflictingAlts = null;
+        // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
         if (configs.uniqueAlt !== ATN.INVALID_ALT_NUMBER) {
             conflictingAlts = new BitSet();
             conflictingAlts.set(configs.uniqueAlt);
         } else {
             conflictingAlts = configs.conflictingAlts;
         }
+
         return conflictingAlts;
     }
 
-    getTokenName(t) {
+    getTokenName(t: any) {
+        // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
         if (t === Token.EOF) {
             return "EOF";
         }
 
+        // @ts-expect-error TS(2339): Property 'EMPTY_VOCABULARY' does not exist on type... Remove this comment to see the full error message
         const vocabulary = this.parser != null ? this.parser.vocabulary : Vocabulary.EMPTY_VOCABULARY;
         const displayName = vocabulary.getDisplayName(t);
         if (displayName.equals(t.toString())) {
@@ -1567,7 +1663,7 @@ export class ParserATNSimulator extends ATNSimulator {
         return displayName + "<" + t + ">";
     }
 
-    getLookaheadName(input) {
+    getLookaheadName(input: any) {
         return this.getTokenName(input.LA(1));
     }
 
@@ -1575,8 +1671,10 @@ export class ParserATNSimulator extends ATNSimulator {
      * Used for debugging in adaptivePredict around execATN but I cut
      * it out for clarity now that alg. works well. We can leave this
      * "dead" code for a bit
+     *
+     * @param nvae
      */
-    dumpDeadEndConfigs(nvae) {
+    dumpDeadEndConfigs(nvae: any) {
         console.log("dead end configs: ");
         const decs = nvae.getDeadEndConfigs();
         for (let i = 0; i < decs.length; i++) {
@@ -1588,6 +1686,7 @@ export class ParserATNSimulator extends ATNSimulator {
                     trans = "Atom " + this.getTokenName(t.label);
                 } else if (t instanceof SetTransition) {
                     const neg = (t instanceof NotSetTransition);
+                    // @ts-expect-error TS(2339): Property 'set' does not exist on type 'SetTransiti... Remove this comment to see the full error message
                     trans = (neg ? "~" : "") + "Set " + t.set;
                 }
             }
@@ -1595,20 +1694,24 @@ export class ParserATNSimulator extends ATNSimulator {
         }
     }
 
-    noViableAlt(input, outerContext, configs, startIndex) {
+    noViableAlt(input: any, outerContext: any, configs: any, startIndex: any) {
         return new NoViableAltException(this.parser, input, input.get(startIndex), input.LT(1), configs, outerContext);
     }
 
-    getUniqueAlt(configs) {
+    getUniqueAlt(configs: any) {
+        // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
         let alt = ATN.INVALID_ALT_NUMBER;
         for (let i = 0; i < configs.items.length; i++) {
             const c = configs.items[i];
+            // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
             if (alt === ATN.INVALID_ALT_NUMBER) {
                 alt = c.alt; // found first alt
             } else if (c.alt !== alt) {
+                // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
                 return ATN.INVALID_ALT_NUMBER;
             }
         }
+
         return alt;
     }
 
@@ -1628,11 +1731,11 @@ export class ParserATNSimulator extends ATNSimulator {
      * @param t The input symbol
      * @param to The target state for the edge
      *
-     * @return If {@code to} is {@code null}, this method returns {@code null};
+     * @returns If {@code to} is {@code null}, this method returns {@code null};
      * otherwise this method returns the result of calling {@link //addDFAState}
      * on {@code to}
      */
-    addDFAEdge(dfa, from_, t, to) {
+    addDFAEdge(dfa: any, from_: any, t: any, to: any) {
         if (this.debug) {
             console.log("EDGE " + from_ + " -> " + to + " upon " + this.getTokenName(t));
         }
@@ -1649,6 +1752,7 @@ export class ParserATNSimulator extends ATNSimulator {
         from_.edges[t + 1] = to; // connect
 
         if (this.debug) {
+            // @ts-expect-error TS(2663): Cannot find name 'parser'. Did you mean the instan... Remove this comment to see the full error message
             console.log("DFA=\n" + dfa.toString(this.parser != null ? parser.vocabulary : Vocabulary.EMPTY_VOCABULARY));
         }
 
@@ -1666,17 +1770,19 @@ export class ParserATNSimulator extends ATNSimulator {
      *
      * @param dfa The dfa
      * @param D The DFA state to add
-     * @return The state stored in the DFA. This will be either the existing
+     * @returns The state stored in the DFA. This will be either the existing
      * state if {@code D} is already in the DFA, or {@code D} itself if the
      * state was not already present
      */
-    addDFAState(dfa, D) {
+    addDFAState(dfa: any, D: any) {
+        // @ts-expect-error TS(2339): Property 'ERROR' does not exist on type 'typeof AT... Remove this comment to see the full error message
         if (D === ATNSimulator.ERROR) {
             return D;
         }
         const existing = dfa.states.get(D);
         if (existing !== null) {
-            if (this.trace_atn_sim) console.log("addDFAState " + D + " exists");
+            if (this.trace_atn_sim) {console.log("addDFAState " + D + " exists");}
+
             return existing;
         }
         D.stateNumber = dfa.states.length;
@@ -1685,16 +1791,17 @@ export class ParserATNSimulator extends ATNSimulator {
             D.configs.setReadonly(true);
         }
 
-        if (this.trace_atn_sim) console.log("addDFAState new " + D);
+        if (this.trace_atn_sim) {console.log("addDFAState new " + D);}
 
         dfa.states.add(D);
         if (this.debug) {
             console.log("adding new DFA state: " + D);
         }
+
         return D;
     }
 
-    reportAttemptingFullContext(dfa, conflictingAlts, configs, startIndex, stopIndex) {
+    reportAttemptingFullContext(dfa: any, conflictingAlts: any, configs: any, startIndex: any, stopIndex: any) {
         if (this.debug || this.retry_debug) {
             const interval = new Interval(startIndex, stopIndex + 1);
             console.log("reportAttemptingFullContext decision=" + dfa.decision + ":" + configs +
@@ -1705,7 +1812,7 @@ export class ParserATNSimulator extends ATNSimulator {
         }
     }
 
-    reportContextSensitivity(dfa, prediction, configs, startIndex, stopIndex) {
+    reportContextSensitivity(dfa: any, prediction: any, configs: any, startIndex: any, stopIndex: any) {
         if (this.debug || this.retry_debug) {
             const interval = new Interval(startIndex, stopIndex + 1);
             console.log("reportContextSensitivity decision=" + dfa.decision + ":" + configs +
@@ -1717,8 +1824,8 @@ export class ParserATNSimulator extends ATNSimulator {
     }
 
     // If context sensitive parsing, we know it's ambiguity not conflict//
-    reportAmbiguity(dfa, D, startIndex, stopIndex,
-        exact, ambigAlts, configs) {
+    reportAmbiguity(dfa: any, D: any, startIndex: any, stopIndex: any,
+        exact: any, ambigAlts: any, configs: any) {
         if (this.debug || this.retry_debug) {
             const interval = new Interval(startIndex, stopIndex + 1);
             console.log("reportAmbiguity " + ambigAlts + ":" + configs +

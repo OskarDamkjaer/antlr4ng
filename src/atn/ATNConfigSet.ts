@@ -4,25 +4,34 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { ATN } from './ATN.js';
-import { SemanticContext } from './SemanticContext.js';
-import { merge } from './PredictionContextUtils.js';
+import { ATN } from "./ATN.js";
+import { SemanticContext } from "./SemanticContext.js";
+import { merge } from "./PredictionContextUtils.js";
 import { arrayToString } from "../utils/arrayToString.js";
 import { HashSet } from "../misc/HashSet.js";
 import { equalArrays } from "../utils/equalArrays.js";
 import { HashCode } from "../misc/HashCode.js";
 
-function hashATNConfig(c) {
+/**
+ *
+ * @param c
+ */
+function hashATNConfig(c: any) {
     return c.hashCodeForConfigSet();
 }
 
-function equalATNConfigs(a, b) {
+/**
+ *
+ * @param a
+ * @param b
+ */
+function equalATNConfigs(a: any, b: any) {
     if (a === b) {
         return true;
     } else if (a === null || b === null) {
         return false;
     } else
-        return a.equalsForConfigSet(b);
+        {return a.equalsForConfigSet(b);}
 }
 
 /**
@@ -31,7 +40,16 @@ function equalATNConfigs(a, b) {
  * graph-structured stack
  */
 export class ATNConfigSet {
-    constructor(fullCtx) {
+    cachedHashCode: any;
+    configLookup: any;
+    configs: any;
+    conflictingAlts: any;
+    dipsIntoOuterContext: any;
+    fullCtx: any;
+    hasSemanticContext: any;
+    readOnly: any;
+    uniqueAlt: any;
+    constructor(fullCtx: any) {
         /**
          * The reason that we need this is because we don't want the hash map to use
          * the standard hash code and equals. We need all configurations with the
@@ -88,14 +106,18 @@ export class ATNConfigSet {
      *
      * <p>This method updates {@link //dipsIntoOuterContext} and
      * {@link //hasSemanticContext} when necessary.</p>
+     *
+     * @param config
+     * @param mergeCache
      */
-    add(config, mergeCache) {
+    add(config: any, mergeCache: any) {
         if (mergeCache === undefined) {
             mergeCache = null;
         }
         if (this.readOnly) {
             throw "This set is readonly";
         }
+        // @ts-expect-error TS(2339): Property 'NONE' does not exist on type 'typeof Sem... Remove this comment to see the full error message
         if (config.semanticContext !== SemanticContext.NONE) {
             this.hasSemanticContext = true;
         }
@@ -106,6 +128,7 @@ export class ATNConfigSet {
         if (existing === config) {
             this.cachedHashCode = -1;
             this.configs.push(config); // track order here
+
             return true;
         }
         // a previous (s,i,pi,_), merge with it and save result
@@ -122,14 +145,17 @@ export class ATNConfigSet {
             existing.precedenceFilterSuppressed = true;
         }
         existing.context = merged; // replace context; no need to alt mapping
+
         return true;
     }
 
     getStates() {
+        // @ts-expect-error TS(2554): Expected 2 arguments, but got 0.
         const states = new HashSet();
         for (let i = 0; i < this.configs.length; i++) {
             states.add(this.configs[i].state);
         }
+
         return states;
     }
 
@@ -137,14 +163,16 @@ export class ATNConfigSet {
         const preds = [];
         for (let i = 0; i < this.configs.length; i++) {
             const c = this.configs[i].semanticContext;
+            // @ts-expect-error TS(2339): Property 'NONE' does not exist on type 'typeof Sem... Remove this comment to see the full error message
             if (c !== SemanticContext.NONE) {
                 preds.push(c.semanticContext);
             }
         }
+
         return preds;
     }
 
-    optimizeConfigs(interpreter) {
+    optimizeConfigs(interpreter: any) {
         if (this.readOnly) {
             throw "This set is readonly";
         }
@@ -157,14 +185,16 @@ export class ATNConfigSet {
         }
     }
 
-    addAll(coll) {
+    addAll(coll: any) {
         for (let i = 0; i < coll.length; i++) {
+            // @ts-expect-error TS(2554): Expected 2 arguments, but got 1.
             this.add(coll[i]);
         }
+
         return false;
     }
 
-    equals(other) {
+    equals(other: any) {
         return this === other ||
             (other instanceof ATNConfigSet &&
                 equalArrays(this.configs, other.configs) &&
@@ -177,11 +207,13 @@ export class ATNConfigSet {
 
     hashCode() {
         const hash = new HashCode();
+        // @ts-expect-error TS(2554): Expected 0 arguments, but got 1.
         hash.update(this.configs);
+
         return hash.finish();
     }
 
-    updateHashCode(hash) {
+    updateHashCode(hash: any) {
         if (this.readOnly) {
             if (this.cachedHashCode === -1) {
                 this.cachedHashCode = this.hashCode();
@@ -196,17 +228,19 @@ export class ATNConfigSet {
         return this.configs.length === 0;
     }
 
-    contains(item) {
+    contains(item: any) {
         if (this.configLookup === null) {
             throw "This method is not implemented for readonly sets.";
         }
+
         return this.configLookup.contains(item);
     }
 
-    containsFast(item) {
+    containsFast(item: any) {
         if (this.configLookup === null) {
             throw "This method is not implemented for readonly sets.";
         }
+
         return this.configLookup.containsFast(item);
     }
 
@@ -216,10 +250,11 @@ export class ATNConfigSet {
         }
         this.configs = [];
         this.cachedHashCode = -1;
+        // @ts-expect-error TS(2554): Expected 2 arguments, but got 0.
         this.configLookup = new HashSet();
     }
 
-    setReadonly(readOnly) {
+    setReadonly(readOnly: any) {
         this.readOnly = readOnly;
         if (readOnly) {
             this.configLookup = null; // can't mod, no need for lookup cache
@@ -229,6 +264,7 @@ export class ATNConfigSet {
     toString() {
         return arrayToString(this.configs) +
             (this.hasSemanticContext ? ",hasSemanticContext=" + this.hasSemanticContext : "") +
+            // @ts-expect-error TS(2339): Property 'INVALID_ALT_NUMBER' does not exist on ty... Remove this comment to see the full error message
             (this.uniqueAlt !== ATN.INVALID_ALT_NUMBER ? ",uniqueAlt=" + this.uniqueAlt : "") +
             (this.conflictingAlts !== null ? ",conflictingAlts=" + this.conflictingAlts : "") +
             (this.dipsIntoOuterContext ? ",dipsIntoOuterContext" : "");

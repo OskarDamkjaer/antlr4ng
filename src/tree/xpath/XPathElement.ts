@@ -5,24 +5,31 @@
  */
 
 export class XPathElement {
-    /** Construct element like `/ID` or `ID` or `/*` etc...
-     *  op is null if just node
-     */
-    constructor(nodeName) {
-        this.nodeName = nodeName;
-        this.invert = false;
-    }
+ invert: any;
+ nodeName: any;
+ /**
+  * Construct element like `/ID` or `ID` or `/*` etc...
+  * op is null if just node
+  *
+  * @param nodeName
+  */
+ constructor(nodeName: any) {
+     this.nodeName = nodeName;
+     this.invert = false;
+ }
 
-    /**
-     * Given tree rooted at `t` return all nodes matched by this path
-     * element.
-     */
-    evaluate(t) { }
+ /**
+  * Given tree rooted at `t` return all nodes matched by this path
+  * element.
+  *
+  * @param t
+  */
+ evaluate(t: any) { }
 
-    toString() {
-        let inv = this.invert ? "!" : "";
-        let className = Object.constructor.name;
+ toString() {
+     const inv = this.invert ? "!" : "";
+     const className = Object.constructor.name;
 
-        return className + "[" + inv + this.nodeName + "]";
-    }
+     return className + "[" + inv + this.nodeName + "]";
+ }
 }

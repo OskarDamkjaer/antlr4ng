@@ -20,8 +20,10 @@ export class LexerPopModeAction extends LexerAction {
 
     /**
      * <p>This action is implemented by calling {@link Lexer//popMode}.</p>
+     *
+     * @param lexer
      */
-    execute(lexer) {
+    execute(lexer: any) {
         lexer.popMode();
     }
 
@@ -30,4 +32,5 @@ export class LexerPopModeAction extends LexerAction {
     }
 }
 
+// @ts-expect-error TS(2339): Property 'INSTANCE' does not exist on type 'typeof... Remove this comment to see the full error message
 LexerPopModeAction.INSTANCE = new LexerPopModeAction();

@@ -11,10 +11,12 @@ import { LexerAction } from "./LexerAction.js";
  * Implements the {@code channel} lexer action by calling
  * {@link Lexer//setChannel} with the assigned channel.
  * Constructs a new {@code channel} action with the specified channel value.
+ *
  * @param channel The channel value to pass to {@link Lexer//setChannel}
  */
 export class LexerChannelAction extends LexerAction {
-    constructor(channel) {
+    channel: any;
+    constructor(channel: any) {
         super(LexerActionType.CHANNEL);
         this.channel = channel;
     }
@@ -22,16 +24,18 @@ export class LexerChannelAction extends LexerAction {
     /**
      * <p>This action is implemented by calling {@link Lexer//setChannel} with the
      * value provided by {@link //getChannel}.</p>
+     *
+     * @param lexer
      */
-    execute(lexer) {
+    execute(lexer: any) {
         lexer._channel = this.channel;
     }
 
-    updateHashCode(hash) {
+    updateHashCode(hash: any) {
         hash.update(this.actionType, this.channel);
     }
 
-    equals(other) {
+    equals(other: any) {
         if (this === other) {
             return true;
         } else if (!(other instanceof LexerChannelAction)) {

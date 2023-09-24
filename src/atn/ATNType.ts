@@ -9,5 +9,5 @@
  */
 export const ATNType = {
     LEXER: 0,
-    PARSER: 1
+    PARSER: 1,
 };

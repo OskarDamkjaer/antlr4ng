@@ -4,7 +4,7 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-export { DFA } from './DFA.js';
-export { DFASerializer } from './DFASerializer.js';
-export { LexerDFASerializer } from './LexerDFASerializer.js';
-export { PredPrediction } from './PredPrediction.js';
+export { DFA } from "./DFA.js";
+export { DFASerializer } from "./DFASerializer.js";
+export { LexerDFASerializer } from "./LexerDFASerializer.js";
+export { PredPrediction } from "./PredPrediction.js";

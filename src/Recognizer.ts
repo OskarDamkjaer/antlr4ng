@@ -4,29 +4,36 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { Token } from './Token.js';
-import { ConsoleErrorListener } from './ConsoleErrorListener.js';
-import { ProxyErrorListener } from './ProxyErrorListener.js';
+import { Token } from "./Token.js";
+import { ConsoleErrorListener } from "./ConsoleErrorListener.js";
+import { ProxyErrorListener } from "./ProxyErrorListener.js";
 
 export class Recognizer {
     static EOF = -1;
     static tokenTypeMapCache = new Map();
     static ruleIndexMapCache = new Map();
 
+    _listeners: any;
+    _stateNumber: any;
+    getVocabulary: any;
+    interpreter: any;
+    ruleNames: any;
+
     constructor() {
+        // @ts-expect-error TS(2339): Property 'INSTANCE' does not exist on type 'typeof... Remove this comment to see the full error message
         this._listeners = [ConsoleErrorListener.INSTANCE];
         this.interpreter = null;
         this._stateNumber = -1;
     }
 
-    checkVersion(toolVersion) {
+    checkVersion(toolVersion: any) {
         const runtimeVersion = "4.13.1";
         if (runtimeVersion !== toolVersion) {
             console.log("ANTLR runtime and generated code versions disagree: " + runtimeVersion + "!=" + toolVersion);
         }
     }
 
-    addErrorListener(listener) {
+    addErrorListener(listener: any) {
         this._listeners.push(listener);
     }
 
@@ -52,10 +59,12 @@ export class Recognizer {
                 }
             }
 
+            // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
             result.set("EOF", Token.EOF);
 
             Recognizer.tokenTypeMapCache.set(vocabulary, result);
         }
+
         return result;
     }
 
@@ -68,7 +77,7 @@ export class Recognizer {
         let result = Recognizer.ruleIndexMapCache.get(ruleNames);
         if (!result) {
             result = new Map();
-            ruleNames.forEach((ruleName, idx) => result.set(ruleName, idx));
+            ruleNames.forEach((ruleName: any, idx: any) => {return result.set(ruleName, idx);});
 
             Recognizer.ruleIndexMapCache.set(ruleNames, result);
         }
@@ -76,19 +85,21 @@ export class Recognizer {
         return result;
     }
 
-    getTokenType(tokenName) {
+    getTokenType(tokenName: any) {
         const ttype = this.getTokenTypeMap().get(tokenName);
         if (ttype) {
             return ttype;
         }
 
+        // @ts-expect-error TS(2339): Property 'INVALID_TYPE' does not exist on type 'ty... Remove this comment to see the full error message
         return Token.INVALID_TYPE;
     }
 
     // What is the error header, normally line/character position information?
-    getErrorHeader(e) {
+    getErrorHeader(e: any) {
         const line = e.offendingToken.line;
         const column = e.offendingToken.column;
+
         return "line " + line + ":" + column;
     }
 
@@ -101,16 +112,19 @@ export class Recognizer {
      * your token objects because you don't have to go modify your lexer
      * so that it creates a new Java type.
      *
+     * @param t
      * @deprecated This method is not called by the ANTLR 4 Runtime. Specific
      * implementations of {@link ANTLRErrorStrategy} may provide a similar
      * feature when necessary. For example, see
-     * {@link DefaultErrorStrategy//getTokenErrorDisplay}.*/
-    getTokenErrorDisplay(t) {
+     * {@link DefaultErrorStrategy//getTokenErrorDisplay}.
+     */
+    getTokenErrorDisplay(t: any) {
         if (t === null) {
             return "<no token>";
         }
         let s = t.text;
         if (s === null) {
+            // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
             if (t.type === Token.EOF) {
                 s = "<EOF>";
             } else {
@@ -118,6 +132,7 @@ export class Recognizer {
             }
         }
         s = s.replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t");
+
         return "'" + s + "'";
     }
 
@@ -128,12 +143,16 @@ export class Recognizer {
     /**
      * subclass needs to override these if there are sempreds or actions
      * that the ATN interp needs to execute
+     *
+     * @param localctx
+     * @param ruleIndex
+     * @param actionIndex
      */
-    sempred(localctx, ruleIndex, actionIndex) {
+    sempred(localctx: any, ruleIndex: any, actionIndex: any) {
         return true;
     }
 
-    precpred(localctx, precedence) {
+    precpred(localctx: any, precedence: any) {
         return true;
     }
 

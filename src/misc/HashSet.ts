@@ -11,14 +11,17 @@ import { arrayToString } from "../utils/arrayToString.js";
 const HASH_KEY_PREFIX = "h-";
 
 export class HashSet {
+    data: any;
+    equalsFunction: any;
+    hashFunction: any;
 
-    constructor(hashFunction, equalsFunction) {
+    constructor(hashFunction: any, equalsFunction: any) {
         this.data = {};
         this.hashFunction = hashFunction || standardHashCodeFunction;
         this.equalsFunction = equalsFunction || standardEqualsFunction;
     }
 
-    add(value) {
+    add(value: any) {
         const key = HASH_KEY_PREFIX + this.hashFunction(value);
         if (key in this.data) {
             const values = this.data[key];
@@ -28,18 +31,20 @@ export class HashSet {
                 }
             }
             values.push(value);
+
             return value;
         } else {
             this.data[key] = [value];
+
             return value;
         }
     }
 
-    has(value) {
+    has(value: any) {
         return this.get(value) != null;
     }
 
-    get(value) {
+    get(value: any) {
         const key = HASH_KEY_PREFIX + this.hashFunction(value);
         if (key in this.data) {
             const values = this.data[key];
@@ -49,11 +54,13 @@ export class HashSet {
                 }
             }
         }
+
         return null;
     }
 
     values() {
-        return Object.keys(this.data).filter(key => key.startsWith(HASH_KEY_PREFIX)).flatMap(key => this.data[key], this);
+        // @ts-expect-error TS(2550): Property 'flatMap' does not exist on type 'string[... Remove this comment to see the full error message
+        return Object.keys(this.data).filter((key) => {return key.startsWith(HASH_KEY_PREFIX);}).flatMap((key: any) => {return this.data[key];}, this);
     }
 
     toString() {
@@ -61,6 +68,6 @@ export class HashSet {
     }
 
     get length() {
-        return Object.keys(this.data).filter(key => key.startsWith(HASH_KEY_PREFIX)).map(key => this.data[key].length, this).reduce((accum, item) => accum + item, 0);
+        return Object.keys(this.data).filter((key) => {return key.startsWith(HASH_KEY_PREFIX);}).map((key) => {return this.data[key].length;}, this).reduce((accum, item) => {return accum + item;}, 0);
     }
 }
