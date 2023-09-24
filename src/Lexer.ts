@@ -4,11 +4,11 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { Token } from './Token.js';
-import { Recognizer } from './Recognizer.js';
-import { CommonTokenFactory } from './CommonTokenFactory.js';
-import { RecognitionException } from './RecognitionException.js';
-import { LexerNoViableAltException } from './LexerNoViableAltException.js';
+import { Token } from "./Token.js";
+import { Recognizer } from "./Recognizer.js";
+import { CommonTokenFactory } from "./CommonTokenFactory.js";
+import { RecognitionException } from "./RecognitionException.js";
+import { LexerNoViableAltException } from "./LexerNoViableAltException.js";
 
 /**
  * A lexer is recognizer that draws input symbols from a character stream.
@@ -124,6 +124,7 @@ export class Lexer extends Recognizer {
             for (; ;) {
                 if (this._hitEOF) {
                     this.emitEOF();
+
                     return this._token;
                 }
                 this._token = null;
@@ -175,6 +176,7 @@ export class Lexer extends Recognizer {
                 if (this._token === null) {
                     this.emit();
                 }
+
                 return this._token;
             }
         } finally {
@@ -221,6 +223,7 @@ export class Lexer extends Recognizer {
             console.log("popMode back to " + this._modeStack.slice(0, -1));
         }
         this.mode(this._modeStack.pop());
+
         return this._mode;
     }
 
@@ -229,6 +232,8 @@ export class Lexer extends Recognizer {
      * for efficiency reasons. Subclass and override this method, nextToken,
      * and getToken (to push tokens into a list and pull from that list
      * rather than a single variable as this implementation does).
+     *
+     * @param token
      */
     emitToken(token: any) {
         this._token = token;
@@ -247,6 +252,7 @@ export class Lexer extends Recognizer {
                 .getCharIndex() - 1, this._tokenStartLine,
             this._tokenStartColumn);
         this.emitToken(t);
+
         return t;
     }
 
@@ -259,6 +265,7 @@ export class Lexer extends Recognizer {
             null, Token.DEFAULT_CHANNEL, this._input.index,
             this._input.index - 1, lpos, cpos);
         this.emitToken(eof);
+
         return eof;
     }
 
@@ -279,6 +286,7 @@ export class Lexer extends Recognizer {
             tokens.push(t);
             t = this.nextToken();
         }
+
         return tokens;
     }
 
@@ -297,18 +305,19 @@ export class Lexer extends Recognizer {
         for (let i = 0; i < s.length; i++) {
             d.push(s[i]);
         }
-        return d.join('');
+
+        return d.join("");
     }
 
     getErrorDisplayForChar(c: any) {
         // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
         if (c.charCodeAt(0) === Token.EOF) {
             return "<EOF>";
-        } else if (c === '\n') {
+        } else if (c === "\n") {
             return "\\n";
-        } else if (c === '\t') {
+        } else if (c === "\t") {
             return "\\t";
-        } else if (c === '\r') {
+        } else if (c === "\r") {
             return "\\r";
         } else {
             return c;
@@ -324,6 +333,8 @@ export class Lexer extends Recognizer {
      * a token, so do the easy thing and just kill a character and hope
      * it all works out. You can instead use the rule invocation stack
      * to do sophisticated error recovery if you are in a fragment rule.
+     *
+     * @param re
      */
     recover(re: any) {
         // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message

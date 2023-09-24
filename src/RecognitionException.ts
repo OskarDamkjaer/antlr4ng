@@ -22,7 +22,7 @@ export class RecognitionException extends Error {
         // @ts-expect-error TS(2339): Property 'captureStackTrace' does not exist on typ... Remove this comment to see the full error message
         if (Error.captureStackTrace)
             // @ts-expect-error TS(2339): Property 'captureStackTrace' does not exist on typ... Remove this comment to see the full error message
-            Error.captureStackTrace(this, RecognitionException);
+            {Error.captureStackTrace(this, RecognitionException);}
         this.message = params.message;
         this.recognizer = params.recognizer;
         this.input = params.input;
@@ -32,7 +32,7 @@ export class RecognitionException extends Error {
          * The current {@link Token} when an error occurred. Since not all streams
          * support accessing symbols by index, we have to track the {@link Token}
          * instance itself
-        */
+         */
         this.offendingToken = null;
 
         /**
@@ -55,7 +55,7 @@ export class RecognitionException extends Error {
      * <p>If the set of expected tokens is not known and could not be computed,
      * this method returns {@code null}.</p>
      *
-     * @return The set of token types that could potentially follow the current
+     * @returns The set of token types that could potentially follow the current
      * state in the ATN, or {@code null} if the information is not available.
      */
     getExpectedTokens() {

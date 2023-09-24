@@ -12,7 +12,7 @@ export class LexerNoViableAltException extends RecognitionException {
     input: any;
     startIndex: any;
     constructor(lexer: any, input: any, startIndex: any, deadEndConfigs: any) {
-        super({ message: "", recognizer: lexer, input: input, ctx: null });
+        super({ message: "", recognizer: lexer, input, ctx: null });
         this.startIndex = startIndex;
         this.deadEndConfigs = deadEndConfigs;
     }
@@ -22,6 +22,7 @@ export class LexerNoViableAltException extends RecognitionException {
         if (this.startIndex >= 0 && this.startIndex < this.input.size) {
             symbol = this.input.getText(new Interval(this.startIndex, this.startIndex));
         }
+
         return "LexerNoViableAltException" + symbol;
     }
 }

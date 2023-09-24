@@ -17,7 +17,7 @@ export class ActionTransition extends Transition {
     target: any,
     ruleIndex: any,
     actionIndex: any,
-    isCtxDependent: any
+    isCtxDependent: any,
   ) {
     super(target);
     this.serializationType = TransitionType.ACTION;

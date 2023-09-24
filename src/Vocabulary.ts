@@ -33,7 +33,7 @@ export class Vocabulary {
         const literalNames = [...tokenNames];
         const symbolicNames = [...tokenNames];
         for (let i = 0; i < tokenNames.length; i++) {
-            let tokenName = tokenNames[i];
+            const tokenName = tokenNames[i];
             if (tokenName == null) {
                 continue;
             }

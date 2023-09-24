@@ -4,7 +4,7 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { ATNConfigSet } from '../atn/ATNConfigSet.js';
+import { ATNConfigSet } from "../atn/ATNConfigSet.js";
 import { HashCode } from "../misc/HashCode.js";
 import { HashSet } from "../misc/HashSet.js";
 
@@ -89,6 +89,7 @@ export class DFAState {
          * ParserATNSimulator//predicateDFAState}.</p>
          */
         this.predicates = null;
+
         return this;
     }
 
@@ -124,6 +125,8 @@ export class DFAState {
      * {@link ParserATNSimulator//addDFAState} we need to know if any other state
      * exists that has this exact set of ATN configurations. The
      * {@link //stateNumber} is irrelevant.</p>
+     *
+     * @param other
      */
     equals(other: any) {
         // compare set of ATN configurations in this set with other
@@ -137,10 +140,11 @@ export class DFAState {
         if (this.isAcceptState) {
             s = s + "=>";
             if (this.predicates !== null)
-                s = s + this.predicates;
+                {s = s + this.predicates;}
             else
-                s = s + this.prediction;
+                {s = s + this.prediction;}
         }
+
         return s;
     }
 
@@ -148,6 +152,7 @@ export class DFAState {
         const hash = new HashCode();
         // @ts-expect-error TS(2554): Expected 0 arguments, but got 1.
         hash.update(this.configs);
+
         return hash.finish();
     }
 }

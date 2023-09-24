@@ -35,7 +35,7 @@ import { DefaultErrorStrategy } from "./DefaultErrorStrategy.js";
  * {@code myparser.setErrorHandler(new BailErrorStrategy());}</p>
  *
  * @see Parser//setErrorHandler(ANTLRErrorStrategy)
- * */
+ */
 export class BailErrorStrategy extends DefaultErrorStrategy {
   constructor() {
     super();
@@ -46,6 +46,9 @@ export class BailErrorStrategy extends DefaultErrorStrategy {
    * in a {@link ParseCancellationException} so it is not caught by the
    * rule function catches. Use {@link Exception//getCause()} to get the
    * original {@link RecognitionException}.
+   *
+   * @param recognizer
+   * @param e
    */
   recover(recognizer: any, e: any) {
     let context = recognizer._ctx;
@@ -60,6 +63,8 @@ export class BailErrorStrategy extends DefaultErrorStrategy {
   /**
    * Make sure we don't attempt to recover inline; if the parser
    * successfully recovers, it won't throw an exception.
+   *
+   * @param recognizer
    */
   recoverInline(recognizer: any) {
     this.recover(recognizer, new InputMismatchException(recognizer));

@@ -20,6 +20,7 @@ export class Predicate extends SemanticContext {
 
     evaluate(parser: any, outerContext: any) {
         const localctx = this.isCtxDependent ? outerContext : null;
+
         return parser.sempred(localctx, this.ruleIndex, this.predIndex);
     }
 

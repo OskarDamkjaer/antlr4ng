@@ -4,6 +4,10 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
+/**
+ *
+ * @param str
+ */
 export function titleCase(str: any) {
     return str.replace(/\w\S*/g, function (txt: any) {
         return txt.charAt(0).toUpperCase() + txt.substr(1);

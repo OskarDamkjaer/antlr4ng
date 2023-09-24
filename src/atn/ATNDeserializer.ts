@@ -4,56 +4,62 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { Token } from '../Token.js';
-import { ATN } from './ATN.js';
-import { ATNType } from './ATNType.js';
+import { Token } from "../Token.js";
+import { ATN } from "./ATN.js";
+import { ATNType } from "./ATNType.js";
 
-import { BasicState } from './BasicState.js';
-import { DecisionState } from './DecisionState.js';
-import { BlockStartState } from './BlockStartState.js';
-import { BlockEndState } from './BlockEndState.js';
-import { LoopEndState } from './LoopEndState.js';
-import { RuleStartState } from './RuleStartState.js';
-import { RuleStopState } from './RuleStopState.js';
-import { TokensStartState } from './TokensStartState.js';
-import { PlusLoopbackState } from './PlusLoopbackState.js';
-import { StarLoopbackState } from './StarLoopbackState.js';
-import { StarLoopEntryState } from './StarLoopEntryState.js';
-import { PlusBlockStartState } from './PlusBlockStartState.js';
-import { StarBlockStartState } from './StarBlockStartState.js';
-import { BasicBlockStartState } from './BasicBlockStartState.js';
+import { BasicState } from "./BasicState.js";
+import { DecisionState } from "./DecisionState.js";
+import { BlockStartState } from "./BlockStartState.js";
+import { BlockEndState } from "./BlockEndState.js";
+import { LoopEndState } from "./LoopEndState.js";
+import { RuleStartState } from "./RuleStartState.js";
+import { RuleStopState } from "./RuleStopState.js";
+import { TokensStartState } from "./TokensStartState.js";
+import { PlusLoopbackState } from "./PlusLoopbackState.js";
+import { StarLoopbackState } from "./StarLoopbackState.js";
+import { StarLoopEntryState } from "./StarLoopEntryState.js";
+import { PlusBlockStartState } from "./PlusBlockStartState.js";
+import { StarBlockStartState } from "./StarBlockStartState.js";
+import { BasicBlockStartState } from "./BasicBlockStartState.js";
 
-import { AtomTransition } from './AtomTransition.js';
-import { SetTransition } from './SetTransition.js';
-import { NotSetTransition } from './NotSetTransition.js';
-import { RuleTransition } from './RuleTransition.js';
-import { RangeTransition } from './RangeTransition.js';
-import { ActionTransition } from './ActionTransition.js';
-import { EpsilonTransition } from './EpsilonTransition.js';
-import { WildcardTransition } from './WildcardTransition.js';
-import { PredicateTransition } from './PredicateTransition.js';
-import { PrecedencePredicateTransition } from './PrecedencePredicateTransition.js';
+import { AtomTransition } from "./AtomTransition.js";
+import { SetTransition } from "./SetTransition.js";
+import { NotSetTransition } from "./NotSetTransition.js";
+import { RuleTransition } from "./RuleTransition.js";
+import { RangeTransition } from "./RangeTransition.js";
+import { ActionTransition } from "./ActionTransition.js";
+import { EpsilonTransition } from "./EpsilonTransition.js";
+import { WildcardTransition } from "./WildcardTransition.js";
+import { PredicateTransition } from "./PredicateTransition.js";
+import { PrecedencePredicateTransition } from "./PrecedencePredicateTransition.js";
 
-import { IntervalSet } from '../misc/IntervalSet.js';
-import { ATNDeserializationOptions } from './ATNDeserializationOptions.js';
+import { IntervalSet } from "../misc/IntervalSet.js";
+import { ATNDeserializationOptions } from "./ATNDeserializationOptions.js";
 
-import { LexerActionType } from './LexerActionType.js';
-import { LexerSkipAction } from './LexerSkipAction.js';
-import { LexerChannelAction } from './LexerChannelAction.js';
-import { LexerCustomAction } from './LexerCustomAction.js';
-import { LexerMoreAction } from './LexerMoreAction.js';
-import { LexerTypeAction } from './LexerTypeAction.js';
-import { LexerPushModeAction } from './LexerPushModeAction.js';
-import { LexerPopModeAction } from './LexerPopModeAction.js';
-import { LexerModeAction } from './LexerModeAction.js';
+import { LexerActionType } from "./LexerActionType.js";
+import { LexerSkipAction } from "./LexerSkipAction.js";
+import { LexerChannelAction } from "./LexerChannelAction.js";
+import { LexerCustomAction } from "./LexerCustomAction.js";
+import { LexerMoreAction } from "./LexerMoreAction.js";
+import { LexerTypeAction } from "./LexerTypeAction.js";
+import { LexerPushModeAction } from "./LexerPushModeAction.js";
+import { LexerPopModeAction } from "./LexerPopModeAction.js";
+import { LexerModeAction } from "./LexerModeAction.js";
 import { ATNStateType } from "./ATNStateType.js";
 import { TransitionType } from "./TransitionType.js";
 
 const SERIALIZED_VERSION = 4;
 
+/**
+ *
+ * @param length
+ * @param value
+ */
 function initArray(length: any, value: any) {
     const tmp = [];
     tmp[length - 1] = value;
+
     return tmp.map(function (i) { return value; });
 }
 
@@ -77,7 +83,7 @@ export class ATNDeserializer {
         const legacy = this.reset(data);
         this.checkVersion(legacy);
         if (legacy)
-            this.skipUUID();
+            {this.skipUUID();}
         const atn = this.readATN();
         this.readStates(atn, legacy);
         this.readRules(atn, legacy);
@@ -85,7 +91,7 @@ export class ATNDeserializer {
         const sets: any = [];
         this.readSets(atn, sets, this.readInt.bind(this));
         if (legacy)
-            this.readSets(atn, sets, this.readInt32.bind(this));
+            {this.readSets(atn, sets, this.readInt32.bind(this));}
         this.readEdges(atn, sets);
         this.readDecisions(atn);
         this.readLexerActions(atn, legacy);
@@ -96,6 +102,7 @@ export class ATNDeserializer {
             // re-verify after modification
             this.verifyATN(atn);
         }
+
         return atn;
     }
 
@@ -104,6 +111,7 @@ export class ATNDeserializer {
         if (version === SERIALIZED_VERSION - 1) {
             const adjust = function (c: any) {
                 const v = c.charCodeAt(0);
+
                 return v > 1 ? v - 2 : v + 65534;
             };
             const temp = data.split("").map(adjust);
@@ -111,10 +119,12 @@ export class ATNDeserializer {
             temp[0] = data.charCodeAt(0);
             this.data = temp;
             this.pos = 0;
+
             return true;
         } else {
             this.data = data;
             this.pos = 0;
+
             return false;
         }
     }
@@ -122,7 +132,7 @@ export class ATNDeserializer {
     skipUUID() {
         let count = 0;
         while (count++ < 8)
-            this.readInt();
+            {this.readInt();}
     }
 
     checkVersion(legacy: any) {
@@ -135,11 +145,12 @@ export class ATNDeserializer {
     readATN() {
         const grammarType = this.readInt();
         const maxTokenType = this.readInt();
+
         return new ATN(grammarType, maxTokenType);
     }
 
     readStates(atn: any, legacy: any) {
-        let j, pair, stateNumber;
+        let j; let pair; let stateNumber;
         const loopBackStateNumbers = [];
         const endStateNumbers = [];
         const nstates = this.readInt();
@@ -176,13 +187,13 @@ export class ATNDeserializer {
             pair[0].endState = atn.states[pair[1]];
         }
 
-        let numNonGreedyStates = this.readInt();
+        const numNonGreedyStates = this.readInt();
         for (j = 0; j < numNonGreedyStates; j++) {
             stateNumber = this.readInt();
             atn.states[stateNumber].nonGreedy = true;
         }
 
-        let numPrecedenceStates = this.readInt();
+        const numPrecedenceStates = this.readInt();
         for (j = 0; j < numPrecedenceStates; j++) {
             stateNumber = this.readInt();
             atn.states[stateNumber].isPrecedenceRule = true;
@@ -222,7 +233,7 @@ export class ATNDeserializer {
     readModes(atn: any) {
         const nmodes = this.readInt();
         for (let i = 0; i < nmodes; i++) {
-            let s = this.readInt();
+            const s = this.readInt();
             atn.modeToStartState.push(atn.states[s]);
         }
     }
@@ -247,7 +258,7 @@ export class ATNDeserializer {
     }
 
     readEdges(atn: any, sets: any) {
-        let i, j, state, trans, target;
+        let i; let j; let state; let trans; let target;
         const nedges = this.readInt();
         for (i = 0; i < nedges; i++) {
             const src = this.readInt();
@@ -355,7 +366,7 @@ export class ATNDeserializer {
     }
 
     generateRuleBypassTransition(atn: any, idx: any) {
-        let i, state;
+        let i; let state;
         const bypassStart = new BasicBlockStartState();
         bypassStart.ruleIndex = idx;
         atn.addState(bypassStart);
@@ -451,6 +462,7 @@ export class ATNDeserializer {
     /**
      * Analyze the {@link StarLoopEntryState} states in the specified ATN to set
      * the {@link StarLoopEntryState} field to the correct value.
+     *
      * @param atn The ATN.
      */
     markPrecedenceDecisions(atn: any) {
@@ -550,6 +562,7 @@ export class ATNDeserializer {
     readInt32() {
         const low = this.readInt();
         const high = this.readInt();
+
         return low | (high << 16);
     }
 
@@ -588,18 +601,18 @@ export class ATNDeserializer {
         if (this.stateFactories === null) {
             const sf = [];
             sf[ATNStateType.INVALID_TYPE] = null;
-            sf[ATNStateType.BASIC] = () => new BasicState();
-            sf[ATNStateType.RULE_START] = () => new RuleStartState();
-            sf[ATNStateType.BLOCK_START] = () => new BasicBlockStartState();
-            sf[ATNStateType.PLUS_BLOCK_START] = () => new PlusBlockStartState();
-            sf[ATNStateType.STAR_BLOCK_START] = () => new StarBlockStartState();
-            sf[ATNStateType.TOKEN_START] = () => new TokensStartState();
-            sf[ATNStateType.RULE_STOP] = () => new RuleStopState();
-            sf[ATNStateType.BLOCK_END] = () => new BlockEndState();
-            sf[ATNStateType.STAR_LOOP_BACK] = () => new StarLoopbackState();
-            sf[ATNStateType.STAR_LOOP_ENTRY] = () => new StarLoopEntryState();
-            sf[ATNStateType.PLUS_LOOP_BACK] = () => new PlusLoopbackState();
-            sf[ATNStateType.LOOP_END] = () => new LoopEndState();
+            sf[ATNStateType.BASIC] = () => {return new BasicState();};
+            sf[ATNStateType.RULE_START] = () => {return new RuleStartState();};
+            sf[ATNStateType.BLOCK_START] = () => {return new BasicBlockStartState();};
+            sf[ATNStateType.PLUS_BLOCK_START] = () => {return new PlusBlockStartState();};
+            sf[ATNStateType.STAR_BLOCK_START] = () => {return new StarBlockStartState();};
+            sf[ATNStateType.TOKEN_START] = () => {return new TokensStartState();};
+            sf[ATNStateType.RULE_STOP] = () => {return new RuleStopState();};
+            sf[ATNStateType.BLOCK_END] = () => {return new BlockEndState();};
+            sf[ATNStateType.STAR_LOOP_BACK] = () => {return new StarLoopbackState();};
+            sf[ATNStateType.STAR_LOOP_ENTRY] = () => {return new StarLoopEntryState();};
+            sf[ATNStateType.PLUS_LOOP_BACK] = () => {return new PlusLoopbackState();};
+            sf[ATNStateType.LOOP_END] = () => {return new LoopEndState();};
             this.stateFactories = sf;
         }
 
@@ -609,6 +622,7 @@ export class ATNDeserializer {
             const s = this.stateFactories[type]();
             if (s !== null) {
                 s.ruleIndex = ruleIndex;
+
                 return s;
             }
         }
@@ -617,17 +631,17 @@ export class ATNDeserializer {
     lexerActionFactory(type: any, data1: any, data2: any) {
         if (this.actionFactories === null) {
             const af = [];
-            af[LexerActionType.CHANNEL] = (data1: any, data2: any) => new LexerChannelAction(data1);
-            af[LexerActionType.CUSTOM] = (data1: any, data2: any) => new LexerCustomAction(data1, data2);
-            af[LexerActionType.MODE] = (data1: any, data2: any) => new LexerModeAction(data1);
+            af[LexerActionType.CHANNEL] = (data1: any, data2: any) => {return new LexerChannelAction(data1);};
+            af[LexerActionType.CUSTOM] = (data1: any, data2: any) => {return new LexerCustomAction(data1, data2);};
+            af[LexerActionType.MODE] = (data1: any, data2: any) => {return new LexerModeAction(data1);};
             // @ts-expect-error TS(2339): Property 'INSTANCE' does not exist on type 'typeof... Remove this comment to see the full error message
-            af[LexerActionType.MORE] = (data1: any, data2: any) => LexerMoreAction.INSTANCE;
+            af[LexerActionType.MORE] = (data1: any, data2: any) => {return LexerMoreAction.INSTANCE;};
             // @ts-expect-error TS(2339): Property 'INSTANCE' does not exist on type 'typeof... Remove this comment to see the full error message
-            af[LexerActionType.POP_MODE] = (data1: any, data2: any) => LexerPopModeAction.INSTANCE;
-            af[LexerActionType.PUSH_MODE] = (data1: any, data2: any) => new LexerPushModeAction(data1);
+            af[LexerActionType.POP_MODE] = (data1: any, data2: any) => {return LexerPopModeAction.INSTANCE;};
+            af[LexerActionType.PUSH_MODE] = (data1: any, data2: any) => {return new LexerPushModeAction(data1);};
             // @ts-expect-error TS(2339): Property 'INSTANCE' does not exist on type 'typeof... Remove this comment to see the full error message
-            af[LexerActionType.SKIP] = (data1: any, data2: any) => LexerSkipAction.INSTANCE;
-            af[LexerActionType.TYPE] = (data1: any, data2: any) => new LexerTypeAction(data1);
+            af[LexerActionType.SKIP] = (data1: any, data2: any) => {return LexerSkipAction.INSTANCE;};
+            af[LexerActionType.TYPE] = (data1: any, data2: any) => {return new LexerTypeAction(data1);};
             this.actionFactories = af;
         }
         if (type > this.actionFactories.length || this.actionFactories[type] === null) {

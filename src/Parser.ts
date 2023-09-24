@@ -4,14 +4,14 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { Token } from './Token.js';
-import { TerminalNode } from './tree/TerminalNode.js';
-import { ErrorNode } from './tree/ErrorNode.js';
-import { ErrorNodeImpl } from './tree/ErrorNodeImpl.js';
-import { Recognizer } from './Recognizer.js';
-import { DefaultErrorStrategy } from './DefaultErrorStrategy.js';
-import { ATNDeserializer } from './atn/ATNDeserializer.js';
-import { ATNDeserializationOptions } from './atn/ATNDeserializationOptions.js';
+import { Token } from "./Token.js";
+import { TerminalNode } from "./tree/TerminalNode.js";
+import { ErrorNode } from "./tree/ErrorNode.js";
+import { ErrorNodeImpl } from "./tree/ErrorNodeImpl.js";
+import { Recognizer } from "./Recognizer.js";
+import { DefaultErrorStrategy } from "./DefaultErrorStrategy.js";
+import { ATNDeserializer } from "./atn/ATNDeserializer.js";
+import { ATNDeserializationOptions } from "./atn/ATNDeserializationOptions.js";
 import { TraceListener } from "./TraceListener.js";
 import { TerminalNodeImpl } from "./tree/TerminalNodeImpl.js";
 
@@ -32,6 +32,8 @@ export class Parser extends Recognizer {
     /**
      * this is all the parsing support code essentially; most of it is error
      * recovery stuff.
+     *
+     * @param input
      */
     constructor(input: any) {
         super();
@@ -108,7 +110,7 @@ export class Parser extends Recognizer {
      * the parse tree by calling {@link ParserRuleContext//addErrorNode}.</p>
      *
      * @param ttype the token type to match
-     * @return the matched symbol
+     * @returns the matched symbol
      * @throws RecognitionException if the current input symbol did not match
      * {@code ttype} and the error strategy could not recover from the
      * mismatched symbol
@@ -127,6 +129,7 @@ export class Parser extends Recognizer {
                 this._ctx.addErrorNode(t);
             }
         }
+
         return t;
     }
 
@@ -142,7 +145,7 @@ export class Parser extends Recognizer {
      * {@link ANTLRErrorStrategy//recoverInline} is -1, the symbol is added to
      * the parse tree by calling {@link ParserRuleContext//addErrorNode}.</p>
      *
-     * @return the matched symbol
+     * @returns the matched symbol
      * @throws RecognitionException if the current input symbol did not match
      * a wildcard and the error strategy could not recover from the mismatched
      * symbol
@@ -161,6 +164,7 @@ export class Parser extends Recognizer {
                 this._ctx.addErrorNode(t);
             }
         }
+
         return t;
     }
 
@@ -212,6 +216,7 @@ export class Parser extends Recognizer {
      *
      * <p>If {@code listener} is {@code null} or has not been added as a parse
      * listener, this method does nothing.</p>
+     *
      * @param listener the listener to remove
      */
     removeParseListener(listener: any) {
@@ -244,6 +249,7 @@ export class Parser extends Recognizer {
 
     /**
      * Notify any parse listeners of an exit rule event.
+     *
      * @see //addParseListener
      */
     triggerExitRuleEvent() {
@@ -287,6 +293,7 @@ export class Parser extends Recognizer {
                 .deserialize(serializedAtn);
             this.bypassAltsAtnCache[serializedAtn] = result;
         }
+
         return result;
     }
 
@@ -316,7 +323,6 @@ export class Parser extends Recognizer {
     get syntaxErrorsCount() {
         return this._syntaxErrors;
     }
-
 
     /**
      * Match needs to return the current input symbol, which gets put
@@ -385,6 +391,7 @@ export class Parser extends Recognizer {
                 });
             }
         }
+
         return o;
     }
 
@@ -398,6 +405,10 @@ export class Parser extends Recognizer {
     /**
      * Always called by generated parsers upon entry to a rule. Access field
      * {@link //_ctx} get the current context.
+     *
+     * @param localctx
+     * @param state
+     * @param ruleIndex
      */
     enterRule(localctx: any, state: any, ruleIndex: any) {
         this.state = state;
@@ -433,7 +444,7 @@ export class Parser extends Recognizer {
     /**
      * Get the precedence level for the top-most precedence rule.
      *
-     * @return The precedence level for the top-most precedence rule, or -1 if
+     * @returns The precedence level for the top-most precedence rule, or -1 if
      * the parser context is not nested within a precedence rule.
      */
     getPrecedence() {
@@ -497,6 +508,7 @@ export class Parser extends Recognizer {
             }
             ctx = ctx.parent;
         }
+
         return null;
     }
 
@@ -520,7 +532,7 @@ export class Parser extends Recognizer {
      * </pre>
      *
      * @param symbol the symbol type to check
-     * @return {@code true} if {@code symbol} can follow the current state in
+     * @returns {@code true} if {@code symbol} can follow the current state in
      * the ATN, otherwise {@code false}.
      */
     isExpectedToken(symbol: any) {
@@ -567,6 +579,7 @@ export class Parser extends Recognizer {
     getExpectedTokensWithinCurrentRule() {
         const atn = this.interpreter.atn;
         const s = atn.states[this.state];
+
         return atn.nextTokens(s);
     }
 
@@ -587,6 +600,8 @@ export class Parser extends Recognizer {
      * in the ATN a rule is invoked.
      *
      * this is very useful for error messages.
+     *
+     * @param p
      */
     getRuleInvocationStack(p: any) {
         p = p || null;
@@ -604,6 +619,7 @@ export class Parser extends Recognizer {
             }
             p = p.parent;
         }
+
         return stack;
     }
 
@@ -635,6 +651,8 @@ export class Parser extends Recognizer {
     /**
      * During a parse is sometimes useful to listen in on the rule entry and exit
      * events as well as token matches. this is for quick and dirty debugging.
+     *
+     * @param trace
      */
     setTrace(trace: any) {
         if (!trace) {

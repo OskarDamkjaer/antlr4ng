@@ -55,7 +55,7 @@ export class ParserInterpreter extends Parser {
 
         // Cache the ATN states where pushNewRecursionContext() must be called in `visitState()`.
         this.#pushRecursionContextStates = new BitSet();
-        for (let state of atn.states) {
+        for (const state of atn.states) {
             if (state instanceof StarLoopEntryState && state.precedenceRuleDecision) {
                 this.#pushRecursionContextStates.set(state.stateNumber);
             }
@@ -101,7 +101,7 @@ export class ParserInterpreter extends Parser {
     }
 
     parse(startRuleIndex: any) {
-        let startRuleStartState = this.#atn.ruleToStartState[startRuleIndex];
+        const startRuleStartState = this.#atn.ruleToStartState[startRuleIndex];
 
         // @ts-expect-error TS(2339): Property 'INVALID_STATE_NUMBER' does not exist on ... Remove this comment to see the full error message
         this._rootContext = this.createInterpreterRuleContext(undefined, ATNState.INVALID_STATE_NUMBER, startRuleIndex);
@@ -113,20 +113,22 @@ export class ParserInterpreter extends Parser {
         }
 
         while (true) {
-            let p = this.atnState;
+            const p = this.atnState;
             switch (p.stateType) {
                 case ATNStateType.RULE_STOP:
                     // pop; return from rule
                     if (this._ctx.isEmpty) {
                         if (startRuleStartState.isPrecedenceRule) {
-                            let result = this._ctx;
-                            let parentContext = this._parentContextStack.pop();
+                            const result = this._ctx;
+                            const parentContext = this._parentContextStack.pop();
                             // @ts-expect-error TS(2532): Object is possibly 'undefined'.
                             this.unrollRecursionContexts(parentContext[0]);
+
                             return result;
                         }
                         else {
                             this.exitRule();
+
                             return this._rootContext;
                         }
                     }
@@ -166,15 +168,15 @@ export class ParserInterpreter extends Parser {
             predictedAlt = this.visitDecisionState(p);
         }
 
-        let transition = p.transitions[predictedAlt - 1];
+        const transition = p.transitions[predictedAlt - 1];
         switch (transition.serializationType) {
             case TransitionType.EPSILON:
                 if (this.#pushRecursionContextStates.get(p.stateNumber) &&
                     !(transition.target instanceof LoopEndState)) {
                     // We are at the start of a left recursive rule's (...)* loop
                     // and we're not taking the exit branch of loop.
-                    let parentContext = this._parentContextStack[this._parentContextStack.length - 1];
-                    let localctx =
+                    const parentContext = this._parentContextStack[this._parentContextStack.length - 1];
+                    const localctx =
                         this.createInterpreterRuleContext(parentContext[0], parentContext[1], this._ctx.ruleIndex);
                     this.pushNewRecursionContext(localctx,
                         this.#atn.ruleToStartState[p.ruleIndex].stateNumber,
@@ -201,9 +203,9 @@ export class ParserInterpreter extends Parser {
                 break;
 
             case TransitionType.RULE:
-                let ruleStartState = transition.target;
-                let ruleIndex = ruleStartState.ruleIndex;
-                let newContext = this.createInterpreterRuleContext(this._ctx, p.stateNumber, ruleIndex);
+                const ruleStartState = transition.target;
+                const ruleIndex = ruleStartState.ruleIndex;
+                const newContext = this.createInterpreterRuleContext(this._ctx, p.stateNumber, ruleIndex);
                 if (ruleStartState.isPrecedenceRule) {
                     this.enterRecursionRule(newContext, ruleStartState.stateNumber, ruleIndex, (transition).precedence);
                 }
@@ -213,7 +215,7 @@ export class ParserInterpreter extends Parser {
                 break;
 
             case TransitionType.PREDICATE:
-                let predicateTransition = transition;
+                const predicateTransition = transition;
                 if (!this.sempred(this._ctx, predicateTransition.ruleIndex, predicateTransition.predIndex)) {
                     // @ts-expect-error TS(2554): Expected 3 arguments, but got 1.
                     throw new FailedPredicateException(this);
@@ -222,13 +224,13 @@ export class ParserInterpreter extends Parser {
                 break;
 
             case TransitionType.ACTION:
-                let actionTransition = transition;
+                const actionTransition = transition;
                 this.action(this._ctx, actionTransition.ruleIndex, actionTransition.actionIndex);
                 break;
 
             case TransitionType.PRECEDENCE:
                 if (!this.precpred(this._ctx, transition.precedence)) {
-                    let precedence = transition.precedence;
+                    const precedence = transition.precedence;
                     // @ts-expect-error TS(2554): Expected 3 arguments, but got 2.
                     throw new FailedPredicateException(this, `precpred(_ctx, ${precedence})`);
                 }
@@ -246,7 +248,7 @@ export class ParserInterpreter extends Parser {
 
         if (p.transitions.length > 1) {
             this.errorHandler.sync(this);
-            let decision = p.decision;
+            const decision = p.decision;
             if (decision === this.overrideDecision && this._input.index === this.overrideDecisionInputIndex &&
                 !this.overrideDecisionReached) {
                 predictedAlt = this.overrideDecisionAlt;
@@ -264,9 +266,9 @@ export class ParserInterpreter extends Parser {
     }
 
     visitRuleStopState(p: any) {
-        let ruleStartState = this.#atn.ruleToStartState[p.ruleIndex];
+        const ruleStartState = this.#atn.ruleToStartState[p.ruleIndex];
         if (ruleStartState.isPrecedenceRule) {
-            let parentContext = this._parentContextStack.pop();
+            const parentContext = this._parentContextStack.pop();
             // @ts-expect-error TS(2532): Object is possibly 'undefined'.
             this.unrollRecursionContexts(parentContext[0]);
             // @ts-expect-error TS(2532): Object is possibly 'undefined'.
@@ -275,7 +277,7 @@ export class ParserInterpreter extends Parser {
             this.exitRule();
         }
 
-        let ruleTransition = this.#atn.states[this.state].transitions[0];
+        const ruleTransition = this.#atn.states[this.state].transitions[0];
         this.state = ruleTransition.followState.stateNumber;
     }
 
@@ -290,11 +292,11 @@ export class ParserInterpreter extends Parser {
     }
 
     recover(e: any) {
-        let i = this._input.index;
+        const i = this._input.index;
         this.errorHandler.recover(this, e);
         if (this._input.index === i) {
             // no input consumed, better add an error node
-            let tok = e.offendingToken;
+            const tok = e.offendingToken;
             if (!tok) {
                 throw new Error("Expected exception to have an offending token");
             }
@@ -304,7 +306,7 @@ export class ParserInterpreter extends Parser {
             const sourcePair = [source, stream];
 
             if (e instanceof InputMismatchException) {
-                let expectedTokens = e.getExpectedTokens();
+                const expectedTokens = e.getExpectedTokens();
                 if (!expectedTokens) {
                     throw new Error("Expected the exception to provide expected tokens");
                 }
@@ -316,7 +318,7 @@ export class ParserInterpreter extends Parser {
                     expectedTokenType = expectedTokens.minElement;
                 }
 
-                let errToken =
+                const errToken =
                     this.getTokenFactory().create(sourcePair,
                         expectedTokenType, tok.text,
                         // @ts-expect-error TS(2339): Property 'DEFAULT_CHANNEL' does not exist on type ... Remove this comment to see the full error message
@@ -325,7 +327,7 @@ export class ParserInterpreter extends Parser {
                         tok.line, tok.charPositionInLine);
                 this._ctx.addErrorNode(this.createErrorNode(this._ctx, errToken));
             } else { // NoViableAlt
-                let errToken =
+                const errToken =
                     this.getTokenFactory().create(sourcePair,
                         // @ts-expect-error TS(2339): Property 'INVALID_TYPE' does not exist on type 'ty... Remove this comment to see the full error message
                         Token.INVALID_TYPE, tok.text,

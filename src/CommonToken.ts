@@ -54,6 +54,7 @@ export class CommonToken extends Token {
         t.line = this.line;
         t.column = this.column;
         t.text = this.text;
+
         return t;
     }
 
@@ -64,7 +65,8 @@ export class CommonToken extends Token {
         t.column = this.column;
         // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
         if (type === Token.EOF)
-            t.text = "";
+            {t.text = "";}
+
         return t;
     }
 

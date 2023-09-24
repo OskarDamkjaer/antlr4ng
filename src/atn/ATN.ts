@@ -4,9 +4,9 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { LL1Analyzer } from './LL1Analyzer.js';
-import { IntervalSet } from '../misc/IntervalSet.js';
-import { Token } from '../Token.js';
+import { LL1Analyzer } from "./LL1Analyzer.js";
+import { IntervalSet } from "../misc/IntervalSet.js";
+import { Token } from "../Token.js";
 
 export class ATN {
     decisionToState: any;
@@ -23,7 +23,7 @@ export class ATN {
         /**
          * Used for runtime deserialization of ATNs from strings
          * The type of the ATN.
-        */
+         */
         this.grammarType = grammarType;
         // The maximum value for any symbol recognized by a transition in the ATN.
         this.maxTokenType = maxTokenType;
@@ -59,9 +59,13 @@ export class ATN {
      * If {@code ctx} is null, the set of tokens will not include what can follow
      * the rule surrounding {@code s}. In other words, the set will be
      * restricted to tokens reachable staying within {@code s}'s rule
+     *
+     * @param s
+     * @param ctx
      */
     nextTokensInContext(s: any, ctx: any) {
         const anal = new LL1Analyzer(this);
+
         return anal.LOOK(s, null, ctx);
     }
 
@@ -69,6 +73,8 @@ export class ATN {
      * Compute the set of valid tokens that can occur starting in {@code s} and
      * staying in same rule. {@link Token//EPSILON} is in set if we reach end of
      * rule
+     *
+     * @param s
      */
     nextTokensNoContext(s: any) {
         if (s.nextTokenWithinRule !== null) {
@@ -76,6 +82,7 @@ export class ATN {
         }
         s.nextTokenWithinRule = this.nextTokensInContext(s, null);
         s.nextTokenWithinRule.readOnly = true;
+
         return s.nextTokenWithinRule;
     }
 
@@ -102,6 +109,7 @@ export class ATN {
     defineDecisionState(s: any) {
         this.decisionToState.push(s);
         s.decision = this.decisionToState.length - 1;
+
         return s.decision;
     }
 
@@ -128,7 +136,7 @@ export class ATN {
      * @param stateNumber the ATN state number
      * @param ctx the full parse context
      *
-     * @return {IntervalSet} The set of potentially valid input symbols which could follow the
+     * @returns {IntervalSet} The set of potentially valid input symbols which could follow the
      * specified state in the specified context.
      *
      * @throws IllegalArgumentException if the ATN does not contain a state with

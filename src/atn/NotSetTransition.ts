@@ -20,6 +20,6 @@ export class NotSetTransition extends SetTransition {
     }
 
     toString() {
-        return '~' + super.toString();
+        return "~" + super.toString();
     }
 }

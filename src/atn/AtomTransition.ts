@@ -24,6 +24,7 @@ export class AtomTransition extends Transition {
         // @ts-expect-error TS(2554): Expected 1 arguments, but got 0.
         const s = new IntervalSet();
         s.addOne(this.label_);
+
         return s;
     }
 

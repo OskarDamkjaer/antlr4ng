@@ -29,7 +29,6 @@ export class ConsoleErrorListener extends BaseErrorListener {
     }
 }
 
-
 /**
  * Provides a default instance of {@link ConsoleErrorListener}.
  */

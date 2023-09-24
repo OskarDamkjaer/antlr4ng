@@ -42,6 +42,8 @@ export class LexerIndexedCustomAction extends LexerAction {
     /**
      * <p>This method calls {@link //execute} on the result of {@link //getAction}
      * using the provided {@code lexer}.</p>
+     *
+     * @param lexer
      */
     execute(lexer: any) {
         // assume the input stream position was properly set by the calling code

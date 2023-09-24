@@ -4,9 +4,14 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { SemanticContext } from './SemanticContext.js';
+import { SemanticContext } from "./SemanticContext.js";
 import { HashCode } from "../misc/HashCode.js";
 
+/**
+ *
+ * @param params
+ * @param isCfg
+ */
 function checkParams(params: any, isCfg: any) {
     if (params === null) {
         const result = { state: null, alt: null, context: null, semanticContext: null };
@@ -14,6 +19,7 @@ function checkParams(params: any, isCfg: any) {
             // @ts-expect-error TS(2339): Property 'reachesIntoOuterContext' does not exist ... Remove this comment to see the full error message
             result.reachesIntoOuterContext = 0;
         }
+
         return result;
     } else {
         const props = {};
@@ -31,6 +37,7 @@ function checkParams(params: any, isCfg: any) {
             // @ts-expect-error TS(2339): Property 'precedenceFilterSuppressed' does not exi... Remove this comment to see the full error message
             props.precedenceFilterSuppressed = params.precedenceFilterSuppressed || false;
         }
+
         return props;
     }
 }
@@ -43,12 +50,13 @@ export class ATNConfig {
     semanticContext: any;
     state: any;
     /**
-     * @param {Object} params A tuple: (ATN state, predicted alt, syntactic, semantic context).
+     * @param {object} params A tuple: (ATN state, predicted alt, syntactic, semantic context).
      * The syntactic context is a graph-structured stack node whose
      * path(s) to the root is the rule invocation(s)
      * chain used to arrive at the state.  The semantic context is
      * the tree of semantic predicates encountered before reaching
      * an ATN state
+     * @param config
      */
     constructor(params: any, config: any) {
         this.checkContext(params, config);
@@ -93,6 +101,7 @@ export class ATNConfig {
     hashCode() {
         const hash = new HashCode();
         this.updateHashCode(hash);
+
         return hash.finish();
     }
 
@@ -104,6 +113,8 @@ export class ATNConfig {
      * An ATN configuration is equal to another if both have
      * the same state, they predict the same alternative, and
      * syntactic/semantic contexts are the same
+     *
+     * @param other
      */
     equals(other: any) {
         if (this === other) {
@@ -123,6 +134,7 @@ export class ATNConfig {
         const hash = new HashCode();
         // @ts-expect-error TS(2554): Expected 0 arguments, but got 3.
         hash.update(this.state.stateNumber, this.alt, this.semanticContext);
+
         return hash.finish();
     }
 

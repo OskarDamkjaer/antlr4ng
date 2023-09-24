@@ -22,6 +22,7 @@ export class SemanticContext {
     hashCode() {
         const hash = new HashCode();
         this.updateHashCode(hash);
+
         return hash.finish();
     }
 
@@ -37,6 +38,9 @@ export class SemanticContext {
      * capture context dependent predicates in the context in which we begin
      * prediction, so we passed in the outer context here in case of context
      * dependent predicate evaluation.</p>
+     *
+     * @param parser
+     * @param outerContext
      */
     evaluate(parser: any, outerContext: any) { }
 
@@ -45,7 +49,7 @@ export class SemanticContext {
      *
      * @param parser The parser instance.
      * @param outerContext The current parser context object.
-     * @return The simplified semantic context after precedence predicates are
+     * @returns The simplified semantic context after precedence predicates are
      * evaluated, which will be one of the following values.
      * <ul>
      * <li>{@link //NONE}: if the predicate simplifies to {@code true} after
@@ -105,6 +109,9 @@ class AND extends SemanticContext {
     /**
      * A semantic context which is true whenever none of the contained contexts
      * is false
+     *
+     * @param a
+     * @param b
      */
     constructor(a: any, b: any) {
         super();
@@ -160,6 +167,9 @@ class AND extends SemanticContext {
      * <p>
      * The evaluation of predicates by this context is short-circuiting, but
      * unordered.</p>
+     *
+     * @param parser
+     * @param outerContext
      */
     evaluate(parser: any, outerContext: any) {
         for (let i = 0; i < this.opnds.length; i++) {
@@ -167,6 +177,7 @@ class AND extends SemanticContext {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -199,11 +210,13 @@ class AND extends SemanticContext {
         operands.map(function (o) {
             result = result === null ? o : SemanticContext.andContext(result, o);
         });
+
         return result;
     }
 
     toString() {
-        const s = this.opnds.map((o: any) => o.toString());
+        const s = this.opnds.map((o: any) => {return o.toString();});
+
         return (s.length > 3 ? s.slice(3) : s).join("&&");
     }
 }
@@ -213,6 +226,9 @@ class OR extends SemanticContext {
     /**
      * A semantic context which is true whenever at least one of the contained
      * contexts is true
+     *
+     * @param a
+     * @param b
      */
     constructor(a: any, b: any) {
         super();
@@ -265,6 +281,9 @@ class OR extends SemanticContext {
      * <p>
      * The evaluation of predicates by this context is short-circuiting, but
      * unordered.</p>
+     *
+     * @param parser
+     * @param outerContext
      */
     evaluate(parser: any, outerContext: any) {
         for (let i = 0; i < this.opnds.length; i++) {
@@ -272,6 +291,7 @@ class OR extends SemanticContext {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -304,15 +324,21 @@ class OR extends SemanticContext {
         operands.map(function (o) {
             return result === null ? o : SemanticContext.orContext(result, o);
         });
+
         return result;
     }
 
     toString() {
-        const s = this.opnds.map((o: any) => o.toString());
+        const s = this.opnds.map((o: any) => {return o.toString();});
+
         return (s.length > 3 ? s.slice(3) : s).join("||");
     }
 }
 
+/**
+ *
+ * @param set
+ */
 function filterPrecedencePredicates(set: any) {
     const result: any = [];
     set.values().map(function (context: any) {
@@ -321,5 +347,6 @@ function filterPrecedencePredicates(set: any) {
             result.push(context);
         }
     });
+
     return result;
 }

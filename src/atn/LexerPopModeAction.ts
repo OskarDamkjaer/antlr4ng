@@ -20,6 +20,8 @@ export class LexerPopModeAction extends LexerAction {
 
     /**
      * <p>This action is implemented by calling {@link Lexer//popMode}.</p>
+     *
+     * @param lexer
      */
     execute(lexer: any) {
         lexer.popMode();

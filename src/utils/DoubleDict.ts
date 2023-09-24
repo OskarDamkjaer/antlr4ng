@@ -17,6 +17,7 @@ export class DoubleDict {
 
     get(a: any, b: any) {
         const d = this.cacheMap.get(a) || null;
+
         return d === null ? null : (d.get(b) || null);
     }
 

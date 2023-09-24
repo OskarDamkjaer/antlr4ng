@@ -4,8 +4,8 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { Token } from './Token.js';
-import { BufferedTokenStream } from './BufferedTokenStream.js';
+import { Token } from "./Token.js";
+import { BufferedTokenStream } from "./BufferedTokenStream.js";
 
 /**
  * This class extends {@link BufferedTokenStream} with functionality to filter
@@ -57,6 +57,7 @@ export class CommonTokenStream extends BufferedTokenStream {
         if (i < 0) {
             return null;
         }
+
         return this.tokens[i];
     }
 
@@ -78,6 +79,7 @@ export class CommonTokenStream extends BufferedTokenStream {
             }
             n += 1;
         }
+
         return this.tokens[i];
     }
 
@@ -95,6 +97,7 @@ export class CommonTokenStream extends BufferedTokenStream {
                 break;
             }
         }
+
         return n;
     }
 }

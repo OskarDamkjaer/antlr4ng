@@ -8,7 +8,7 @@ import { FailedPredicateException } from "./FailedPredicateException.js";
 import { InputMismatchException } from "./InputMismatchException.js";
 import { NoViableAltException } from "./NoViableAltException.js";
 import { ATNState } from "./atn/ATNState.js";
-import { Token } from './Token.js';
+import { Token } from "./Token.js";
 import { Interval } from "./misc/Interval.js";
 import { IntervalSet } from "./misc/IntervalSet.js";
 import { ATNStateType } from "./atn/ATNStateType.js";
@@ -50,6 +50,8 @@ export class DefaultErrorStrategy {
     /**
      * <p>The default implementation simply calls {@link //endErrorCondition} to
      * ensure that the handler is not in error recovery mode.</p>
+     *
+     * @param recognizer
      */
     reset(recognizer: any) {
         this.endErrorCondition(recognizer);
@@ -72,6 +74,7 @@ export class DefaultErrorStrategy {
     /**
      * This method is called to leave error recovery mode after recovering from
      * a recognition exception.
+     *
      * @param recognizer
      */
     endErrorCondition(recognizer: any) {
@@ -83,6 +86,8 @@ export class DefaultErrorStrategy {
     /**
      * {@inheritDoc}
      * <p>The default implementation simply calls {@link //endErrorCondition}.</p>
+     *
+     * @param recognizer
      */
     reportMatch(recognizer: any) {
         this.endErrorCondition(recognizer);
@@ -106,6 +111,9 @@ export class DefaultErrorStrategy {
      * <li>All other types: calls {@link Parser//notifyErrorListeners} to report
      * the exception</li>
      * </ul>
+     *
+     * @param recognizer
+     * @param e
      */
     reportError(recognizer: any, e: any) {
         // if we've already reported an error and have not matched a token
@@ -135,6 +143,8 @@ export class DefaultErrorStrategy {
      * until we find one in the resynchronization set--loosely the set of tokens
      * that can follow the current rule.</p>
      *
+     * @param recognizer
+     * @param e
      */
     recover(recognizer: any, e: any) {
         if (this.lastErrorIndex === recognizer.inputStream.index &&
@@ -200,6 +210,7 @@ export class DefaultErrorStrategy {
      * some reason speed is suffering for you, you can turn off this
      * functionality by simply overriding this method as a blank { }.</p>
      *
+     * @param recognizer
      */
     sync(recognizer: any) {
         // If already recovering, don't try to sync
@@ -214,6 +225,7 @@ export class DefaultErrorStrategy {
             this.nextTokensContext = null;
             // @ts-expect-error TS(2339): Property 'INVALID_STATE_NUMBER' does not exist on ... Remove this comment to see the full error message
             this.nextTokenState = ATNState.INVALID_STATE_NUMBER;
+
             return;
         // @ts-expect-error TS(2339): Property 'EPSILON' does not exist on type 'typeof ... Remove this comment to see the full error message
         } else if (nextTokens.contains(Token.EPSILON)) {
@@ -223,6 +235,7 @@ export class DefaultErrorStrategy {
                 this.nextTokensContext = recognizer._ctx;
                 this.nextTokensState = recognizer._stateNumber;
             }
+
             return;
         }
         switch (s.stateType) {
@@ -325,7 +338,6 @@ export class DefaultErrorStrategy {
      * {@link Parser//notifyErrorListeners}.</p>
      *
      * @param recognizer the parser instance
-     *
      */
     reportUnwantedToken(recognizer: any) {
         if (this.inErrorRecoveryMode(recognizer)) {
@@ -383,7 +395,7 @@ export class DefaultErrorStrategy {
      * the {@code LA(2)} token) as the successful result of the match operation.</p>
      *
      * <p>This recovery strategy is implemented by {@link
-        * //singleTokenDeletion}.</p>
+     * //singleTokenDeletion}.</p>
      *
      * <p><strong>MISSING TOKEN</strong> (single token insertion)</p>
      *
@@ -394,7 +406,7 @@ export class DefaultErrorStrategy {
      * result of the match operation.</p>
      *
      * <p>This recovery strategy is implemented by {@link
-        * //singleTokenInsertion}.</p>
+     * //singleTokenInsertion}.</p>
      *
      * <p><strong>EXAMPLE</strong></p>
      *
@@ -418,6 +430,8 @@ export class DefaultErrorStrategy {
      * call {@link //recoverInline}. To recover, it sees that {@code LA(1)==';'}
      * is in the set of tokens that can follow the {@code ')'} token reference
      * in rule {@code atom}. It can assume that you forgot the {@code ')'}.
+     *
+     * @param recognizer
      */
     recoverInline(recognizer: any) {
         // SINGLE TOKEN DELETION
@@ -426,6 +440,7 @@ export class DefaultErrorStrategy {
             // we have deleted the extra token.
             // now, move past ttype token as if all were ok
             recognizer.consume();
+
             return matchedSymbol;
         }
         // SINGLE TOKEN INSERTION
@@ -450,7 +465,7 @@ export class DefaultErrorStrategy {
      * token with the correct type to produce this behavior.</p>
      *
      * @param recognizer the parser instance
-     * @return {@code true} if single-token insertion is a viable recovery
+     * @returns {@code true} if single-token insertion is a viable recovery
      * strategy for the current mismatched input, otherwise {@code false}
      */
     singleTokenInsertion(recognizer: any) {
@@ -464,6 +479,7 @@ export class DefaultErrorStrategy {
         const expectingAtLL2 = atn.nextTokens(next, recognizer._ctx);
         if (expectingAtLL2.contains(currentSymbolType)) {
             this.reportMissingToken(recognizer);
+
             return true;
         } else {
             return false;
@@ -485,7 +501,7 @@ export class DefaultErrorStrategy {
      * match.</p>
      *
      * @param recognizer the parser instance
-     * @return the successfully matched {@link Token} instance if single-token
+     * @returns the successfully matched {@link Token} instance if single-token
      * deletion successfully recovers from the mismatched input, otherwise
      * {@code null}
      */
@@ -502,6 +518,7 @@ export class DefaultErrorStrategy {
             // we want to return the token we're actually matching
             const matchedSymbol = recognizer.getCurrentToken();
             this.reportMatch(recognizer); // we know current token is correct
+
             return matchedSymbol;
         } else {
             return null;
@@ -528,6 +545,7 @@ export class DefaultErrorStrategy {
      * If you change what tokens must be created by the lexer,
      * override this method to create the appropriate tokens.
      *
+     * @param recognizer
      */
     getMissingSymbol(recognizer: any) {
         const currentSymbol = recognizer.getCurrentToken();
@@ -571,6 +589,8 @@ export class DefaultErrorStrategy {
      * the token). This is better than forcing you to override a method in
      * your token objects because you don't have to go modify your lexer
      * so that it creates a new Java type.
+     *
+     * @param t
      */
     getTokenErrorDisplay(t: any) {
         if (t === null) {
@@ -585,6 +605,7 @@ export class DefaultErrorStrategy {
                 s = "<" + t.type + ">";
             }
         }
+
         return this.escapeWSAndQuote(s);
     }
 
@@ -592,6 +613,7 @@ export class DefaultErrorStrategy {
         s = s.replace(/\n/g, "\\n");
         s = s.replace(/\r/g, "\\r");
         s = s.replace(/\t/g, "\\t");
+
         return "'" + s + "'";
     }
 
@@ -687,6 +709,8 @@ export class DefaultErrorStrategy {
      *
      * Like Grosch I implement context-sensitive FOLLOW sets that are combined
      * at run-time upon error to avoid overhead during parsing.
+     *
+     * @param recognizer
      */
     getErrorRecoverySet(recognizer: any) {
         const atn = recognizer.interpreter.atn;
@@ -703,6 +727,7 @@ export class DefaultErrorStrategy {
         }
         // @ts-expect-error TS(2339): Property 'EPSILON' does not exist on type 'typeof ... Remove this comment to see the full error message
         recoverSet.removeOne(Token.EPSILON);
+
         return recoverSet;
     }
 

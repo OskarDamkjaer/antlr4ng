@@ -4,10 +4,10 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { RuleContext } from './atn/RuleContext.js';
-import { TerminalNode } from './tree/TerminalNode.js';
-import { TerminalNodeImpl } from './tree/TerminalNodeImpl.js';
-import { ErrorNodeImpl } from './tree/ErrorNodeImpl.js';
+import { RuleContext } from "./atn/RuleContext.js";
+import { TerminalNode } from "./tree/TerminalNode.js";
+import { TerminalNodeImpl } from "./tree/TerminalNodeImpl.js";
+import { ErrorNodeImpl } from "./tree/ErrorNodeImpl.js";
 import { Interval } from "./misc/Interval.js";
 
 /**
@@ -95,10 +95,12 @@ export class ParserRuleContext extends RuleContext {
             this.children = [];
         }
         this.children.push(child);
+
         return child;
     }
 
-    /** Used by enterOuterAlt to toss out a RuleContext previously added as
+    /**
+     * Used by enterOuterAlt to toss out a RuleContext previously added as
      * we entered a rule. If we have // label, we will need to remove
      * generic ruleContext object.
      */
@@ -112,6 +114,7 @@ export class ParserRuleContext extends RuleContext {
         const node = new TerminalNodeImpl(token);
         this.addChild(node);
         node.parent = this;
+
         return node;
     }
 
@@ -119,6 +122,7 @@ export class ParserRuleContext extends RuleContext {
         const node = new ErrorNodeImpl(badToken);
         this.addChild(node);
         node.parent = this;
+
         return node;
     }
 
@@ -141,6 +145,7 @@ export class ParserRuleContext extends RuleContext {
                     }
                 }
             }
+
             return null;
         }
     }
@@ -162,6 +167,7 @@ export class ParserRuleContext extends RuleContext {
                 }
             }
         }
+
         return null;
     }
 
@@ -179,6 +185,7 @@ export class ParserRuleContext extends RuleContext {
                     }
                 }
             }
+
             return tokens;
         }
     }
@@ -198,6 +205,7 @@ export class ParserRuleContext extends RuleContext {
                     contexts.push(child);
                 }
             }
+
             return contexts;
         }
     }

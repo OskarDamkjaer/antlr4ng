@@ -4,6 +4,11 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
+/**
+ *
+ * @param s
+ * @param escapeSpaces
+ */
 export function escapeWhitespace(s: any, escapeSpaces: any) {
     s = s.replace(/\t/g, "\\t")
         .replace(/\n/g, "\\n")
@@ -11,5 +16,6 @@ export function escapeWhitespace(s: any, escapeSpaces: any) {
     if (escapeSpaces) {
         s = s.replace(/ /g, "\u00B7");
     }
+
     return s;
 }

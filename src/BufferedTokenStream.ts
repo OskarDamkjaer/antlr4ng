@@ -4,9 +4,9 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { Token } from './Token.js';
-import { Lexer } from './Lexer.js';
-import { Interval } from './misc/Interval.js';
+import { Token } from "./Token.js";
+import { Lexer } from "./Lexer.js";
+import { Interval } from "./misc/Interval.js";
 import { TokenStream } from "./TokenStream.js";
 
 /**
@@ -99,6 +99,7 @@ export class BufferedTokenStream extends TokenStream {
 
     get(index: any) {
         this.lazyInit();
+
         return this.tokens[index];
     }
 
@@ -129,7 +130,8 @@ export class BufferedTokenStream extends TokenStream {
     /**
      * Make sure index {@code i} in tokens has a token.
      *
-     * @return {Boolean} {@code true} if a token is located at index {@code i}, otherwise
+     * @param i
+     * @returns {boolean} {@code true} if a token is located at index {@code i}, otherwise
      * {@code false}.
      * @see //get(int i)
      */
@@ -137,15 +139,18 @@ export class BufferedTokenStream extends TokenStream {
         const n = i - this.tokens.length + 1; // how many more elements we need?
         if (n > 0) {
             const fetched = this.fetch(n);
+
             return fetched >= n;
         }
+
         return true;
     }
 
     /**
      * Add {@code n} elements to buffer.
      *
-     * @return {Number} The actual number of elements added to the buffer.
+     * @param n
+     * @returns {number} The actual number of elements added to the buffer.
      */
     fetch(n: any) {
         if (this.fetchedEOF) {
@@ -158,9 +163,11 @@ export class BufferedTokenStream extends TokenStream {
             // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
             if (t.type === Token.EOF) {
                 this.fetchedEOF = true;
+
                 return i + 1;
             }
         }
+
         return n;
     }
 
@@ -205,6 +212,7 @@ export class BufferedTokenStream extends TokenStream {
                 subset.push(t);
             }
         }
+
         return subset;
     }
 
@@ -216,6 +224,7 @@ export class BufferedTokenStream extends TokenStream {
         if (this._index - k < 0) {
             return null;
         }
+
         return this.tokens[this._index - k];
     }
 
@@ -233,6 +242,7 @@ export class BufferedTokenStream extends TokenStream {
             // EOF must be last token
             return this.tokens[this.tokens.length - 1];
         }
+
         return this.tokens[i];
     }
 
@@ -247,8 +257,8 @@ export class BufferedTokenStream extends TokenStream {
      * that
      * the seek target is always an on-channel token.</p>
      *
-     * @param {Number} i The target token index.
-     * @return {Number} The adjusted target token index.
+     * @param {number} i The target token index.
+     * @returns {number} The adjusted target token index.
      */
     adjustSeekIndex(i: any) {
         return i;
@@ -281,6 +291,9 @@ export class BufferedTokenStream extends TokenStream {
      * Given a starting index, return the index of the next token on channel.
      * Return i if tokens[i] is on channel. Return -1 if there are no tokens
      * on channel between i and EOF.
+     *
+     * @param i
+     * @param channel
      */
     nextTokenOnChannel(i: any, channel: any) {
         this.sync(i);
@@ -297,6 +310,7 @@ export class BufferedTokenStream extends TokenStream {
             this.sync(i);
             token = this.tokens[i];
         }
+
         return i;
     }
 
@@ -304,11 +318,15 @@ export class BufferedTokenStream extends TokenStream {
      * Given a starting index, return the index of the previous token on channel.
      * Return i if tokens[i] is on channel. Return -1 if there are no tokens
      * on channel between i and 0.
+     *
+     * @param i
+     * @param channel
      */
     previousTokenOnChannel(i: any, channel: any) {
         while (i >= 0 && this.tokens[i].channel !== channel) {
             i -= 1;
         }
+
         return i;
     }
 
@@ -316,6 +334,9 @@ export class BufferedTokenStream extends TokenStream {
      * Collect all tokens on specified channel to the right of
      * the current token up until we see a token on DEFAULT_TOKEN_CHANNEL or
      * EOF. If channel is -1, find any non default channel token.
+     *
+     * @param tokenIndex
+     * @param channel
      */
     getHiddenTokensToRight(tokenIndex: any,
         channel: any) {
@@ -332,6 +353,7 @@ export class BufferedTokenStream extends TokenStream {
         const from_ = tokenIndex + 1;
         // if none onchannel to right, nextOnChannel=-1 so set to = last token
         const to = nextOnChannel === -1 ? this.tokens.length - 1 : nextOnChannel;
+
         return this.filterForChannel(from_, to, channel);
     }
 
@@ -339,6 +361,9 @@ export class BufferedTokenStream extends TokenStream {
      * Collect all tokens on specified channel to the left of
      * the current token up until we see a token on DEFAULT_TOKEN_CHANNEL.
      * If channel is -1, find any non default channel token.
+     *
+     * @param tokenIndex
+     * @param channel
      */
     getHiddenTokensToLeft(tokenIndex: any,
         channel: any) {
@@ -358,6 +383,7 @@ export class BufferedTokenStream extends TokenStream {
         // if none on channel to left, prevOnChannel=-1 then from=0
         const from_ = prevOnChannel + 1;
         const to = tokenIndex - 1;
+
         return this.filterForChannel(from_, to, channel);
     }
 
@@ -377,6 +403,7 @@ export class BufferedTokenStream extends TokenStream {
         if (hidden.length === 0) {
             return null;
         }
+
         return hidden;
     }
 
@@ -414,12 +441,13 @@ export class BufferedTokenStream extends TokenStream {
             }
             s = s + t.text;
         }
+
         return s;
     }
 
     // Get all tokens from lexer until EOF///
     fill() {
         this.lazyInit();
-        while (this.fetch(1000) === 1000);
+        while (this.fetch(1000) === 1000){;}
     }
 }

@@ -4,6 +4,11 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
+/**
+ *
+ * @param a
+ * @param b
+ */
 export function standardEqualsFunction(a: any, b: any) {
     return a ? a.equals(b) : a === b;
 }

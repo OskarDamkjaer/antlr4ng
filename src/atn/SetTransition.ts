@@ -6,7 +6,7 @@
 
 // A transition containing a set of values.
 import { IntervalSet } from "../misc/IntervalSet.js";
-import { Token } from '../Token.js';
+import { Token } from "../Token.js";
 import { Transition } from "./Transition.js";
 import { TransitionType } from "./TransitionType.js";
 

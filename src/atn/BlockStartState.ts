@@ -14,6 +14,7 @@ export class BlockStartState extends DecisionState {
  constructor() {
      super();
      this.endState = null;
+
      return this;
  }
 }

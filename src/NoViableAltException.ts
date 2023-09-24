@@ -22,7 +22,7 @@ export class NoViableAltException extends RecognitionException {
      startToken = startToken ?? recognizer.getCurrentToken();
      input = input ?? recognizer.inputStream;
 
-     super({ message: "", recognizer: recognizer, input: input, ctx: ctx });
+     super({ message: "", recognizer, input, ctx });
 
      // Which configurations did we try at input.index() that couldn't match
      // input.LT(1)?//

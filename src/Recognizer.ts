@@ -4,9 +4,9 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { Token } from './Token.js';
-import { ConsoleErrorListener } from './ConsoleErrorListener.js';
-import { ProxyErrorListener } from './ProxyErrorListener.js';
+import { Token } from "./Token.js";
+import { ConsoleErrorListener } from "./ConsoleErrorListener.js";
+import { ProxyErrorListener } from "./ProxyErrorListener.js";
 
 export class Recognizer {
     static EOF = -1;
@@ -64,6 +64,7 @@ export class Recognizer {
 
             Recognizer.tokenTypeMapCache.set(vocabulary, result);
         }
+
         return result;
     }
 
@@ -76,7 +77,7 @@ export class Recognizer {
         let result = Recognizer.ruleIndexMapCache.get(ruleNames);
         if (!result) {
             result = new Map();
-            ruleNames.forEach((ruleName: any, idx: any) => result.set(ruleName, idx));
+            ruleNames.forEach((ruleName: any, idx: any) => {return result.set(ruleName, idx);});
 
             Recognizer.ruleIndexMapCache.set(ruleNames, result);
         }
@@ -98,6 +99,7 @@ export class Recognizer {
     getErrorHeader(e: any) {
         const line = e.offendingToken.line;
         const column = e.offendingToken.column;
+
         return "line " + line + ":" + column;
     }
 
@@ -110,10 +112,12 @@ export class Recognizer {
      * your token objects because you don't have to go modify your lexer
      * so that it creates a new Java type.
      *
+     * @param t
      * @deprecated This method is not called by the ANTLR 4 Runtime. Specific
      * implementations of {@link ANTLRErrorStrategy} may provide a similar
      * feature when necessary. For example, see
-     * {@link DefaultErrorStrategy//getTokenErrorDisplay}.*/
+     * {@link DefaultErrorStrategy//getTokenErrorDisplay}.
+     */
     getTokenErrorDisplay(t: any) {
         if (t === null) {
             return "<no token>";
@@ -128,6 +132,7 @@ export class Recognizer {
             }
         }
         s = s.replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t");
+
         return "'" + s + "'";
     }
 
@@ -138,6 +143,10 @@ export class Recognizer {
     /**
      * subclass needs to override these if there are sempreds or actions
      * that the ATN interp needs to execute
+     *
+     * @param localctx
+     * @param ruleIndex
+     * @param actionIndex
      */
     sempred(localctx: any, ruleIndex: any, actionIndex: any) {
         return true;

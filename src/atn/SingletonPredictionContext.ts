@@ -4,7 +4,7 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { PredictionContext } from './PredictionContext.js';
+import { PredictionContext } from "./PredictionContext.js";
 import { HashCode } from "../misc/HashCode.js";
 
 export class SingletonPredictionContext extends PredictionContext {
@@ -45,11 +45,11 @@ export class SingletonPredictionContext extends PredictionContext {
             return false; // can't be same if hash is different
         } else {
             if (this.returnState !== other.returnState)
-                return false;
+                {return false;}
             else if (this.parent == null)
-                return other.parent == null;
+                {return other.parent == null;}
             else
-                return this.parent.equals(other.parent);
+                {return this.parent.equals(other.parent);}
         }
     }
 

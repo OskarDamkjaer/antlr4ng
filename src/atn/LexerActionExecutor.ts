@@ -4,7 +4,7 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { LexerIndexedCustomAction } from './LexerIndexedCustomAction.js';
+import { LexerIndexedCustomAction } from "./LexerIndexedCustomAction.js";
 import { HashCode } from "../misc/HashCode.js";
 
 export class LexerActionExecutor {
@@ -17,6 +17,8 @@ export class LexerActionExecutor {
      * <p>The executor tracks position information for position-dependent lexer actions
      * efficiently, ensuring that actions appearing only at the end of the rule do
      * not cause bloating of the {@link DFA} created for the lexer.</p>
+     *
+     * @param lexerActions
      */
     constructor(lexerActions: any) {
         this.lexerActions = lexerActions === null ? [] : lexerActions;
@@ -26,6 +28,7 @@ export class LexerActionExecutor {
          */
         // @ts-expect-error TS(2554): Expected 0 arguments, but got 1.
         this.cachedHashCode = HashCode.hashStuff(lexerActions); // "".join([str(la) for la in
+
         // lexerActions]))
         return this;
     }
@@ -56,7 +59,7 @@ export class LexerActionExecutor {
      * @param offset The current offset to assign to all position-dependent
      * lexer actions which do not already have offsets assigned.
      *
-     * @return {LexerActionExecutor} A {@link LexerActionExecutor} which stores input stream offsets
+     * @returns {LexerActionExecutor} A {@link LexerActionExecutor} which stores input stream offsets
      * for all position-dependent lexer actions.
      */
     fixOffsetBeforeMatch(offset: any) {
@@ -145,6 +148,7 @@ export class LexerActionExecutor {
                     return false;
                 }
             }
+
             return true;
         }
     }
@@ -161,7 +165,7 @@ export class LexerActionExecutor {
      * @param lexerAction The lexer action to execute after the actions
      * specified in {@code lexerActionExecutor}.
      *
-     * @return {LexerActionExecutor} A {@link LexerActionExecutor} for executing the combine actions
+     * @returns {LexerActionExecutor} A {@link LexerActionExecutor} for executing the combine actions
      * of {@code lexerActionExecutor} and {@code lexerAction}.
      */
     static append(lexerActionExecutor: any, lexerAction: any) {
@@ -169,6 +173,7 @@ export class LexerActionExecutor {
             return new LexerActionExecutor([lexerAction]);
         }
         const lexerActions = lexerActionExecutor.lexerActions.concat([lexerAction]);
+
         return new LexerActionExecutor(lexerActions);
     }
 }

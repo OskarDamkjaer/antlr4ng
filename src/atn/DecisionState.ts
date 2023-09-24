@@ -13,6 +13,7 @@ export class DecisionState extends ATNState {
         super();
         this.decision = -1;
         this.nonGreedy = false;
+
         return this;
     }
 }

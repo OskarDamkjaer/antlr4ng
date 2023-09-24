@@ -72,7 +72,7 @@ export class XPathLexer extends Lexer {
     ID_action(localctx: any, actionIndex: any) {
         switch (actionIndex) {
             case 0: {
-                let text = this.text;
+                const text = this.text;
                 if (text.charAt(0) === text.charAt(0).toUpperCase()) {
                     this._type = XPathLexer.TOKEN_REF;
                 } else {

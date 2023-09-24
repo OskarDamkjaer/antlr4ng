@@ -4,7 +4,7 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { Token } from '../Token.js';
+import { Token } from "../Token.js";
 import { Interval } from "./Interval.js";
 import { Lexer } from "../Lexer.js";
 import { Vocabulary } from "../Vocabulary.js";
@@ -160,7 +160,7 @@ export class IntervalSet {
     // @ts-expect-error TS(7006): Parameter 'other' implicitly has an 'any' type.
     addSet(other) {
         // @ts-expect-error TS(7006): Parameter 'toAdd' implicitly has an 'any' type.
-        other.intervals.forEach(toAdd => this.addInterval(toAdd), this);
+        other.intervals.forEach((toAdd) => {return this.addInterval(toAdd);}, this);
 
         return this;
     }
@@ -194,7 +194,7 @@ export class IntervalSet {
         const result = new IntervalSet();
         result.addSet(this);
         // @ts-expect-error TS(7006): Parameter 'set' implicitly has an 'any' type.
-        sets.forEach(set => result.addSet(set), this);
+        sets.forEach((set) => {return result.addSet(set);}, this);
 
         return result;
     }
@@ -208,18 +208,18 @@ export class IntervalSet {
         }
 
         // @ts-expect-error TS(2339): Property 'intervals' does not exist on type 'Inter... Remove this comment to see the full error message
-        let myIntervals = this.intervals;
-        let theirIntervals = other.intervals;
+        const myIntervals = this.intervals;
+        const theirIntervals = other.intervals;
         let intersection;
-        let mySize = myIntervals.length;
-        let theirSize = theirIntervals.length;
+        const mySize = myIntervals.length;
+        const theirSize = theirIntervals.length;
         let i = 0;
         let j = 0;
 
         // Iterate down both interval lists looking for non-disjoint intervals.
         while (i < mySize && j < theirSize) {
-            let mine = myIntervals[i];
-            let theirs = theirIntervals[j];
+            const mine = myIntervals[i];
+            const theirs = theirIntervals[j];
 
             if (mine.startsBeforeDisjoint(theirs)) {
                 // Move this iterator looking for interval that might overlap.
@@ -417,6 +417,7 @@ export class IntervalSet {
                     const x = new Interval(toRemove.stop, existing.stop);
                     // @ts-expect-error TS(2339): Property 'intervals' does not exist on type 'Inter... Remove this comment to see the full error message
                     this.intervals.splice(pos, 0, x);
+
                     return;
                 }
                 // check for included range, remove it
@@ -462,18 +463,21 @@ export class IntervalSet {
                 else if (value === existing.start && value === existing.stop) {
                     // @ts-expect-error TS(2339): Property 'intervals' does not exist on type 'Inter... Remove this comment to see the full error message
                     this.intervals.splice(i, 1);
+
                     return;
                 }
                 // check for lower boundary
                 else if (value === existing.start) {
                     // @ts-expect-error TS(2339): Property 'intervals' does not exist on type 'Inter... Remove this comment to see the full error message
                     this.intervals[i] = new Interval(existing.start + 1, existing.stop);
+
                     return;
                 }
                 // check for upper boundary
                 else if (value === existing.stop) {
                     // @ts-expect-error TS(2339): Property 'intervals' does not exist on type 'Inter... Remove this comment to see the full error message
                     this.intervals[i] = new Interval(existing.start, existing.stop);
+
                     return;
                 }
                 // split existing range
@@ -482,6 +486,7 @@ export class IntervalSet {
                     existing.start = value + 1;
                     // @ts-expect-error TS(2339): Property 'intervals' does not exist on type 'Inter... Remove this comment to see the full error message
                     this.intervals.splice(i, 0, replace);
+
                     return;
                 }
             }
@@ -590,7 +595,7 @@ export class IntervalSet {
     get length() {
         let result = 0;
         // @ts-expect-error TS(2339): Property 'intervals' does not exist on type 'Inter... Remove this comment to see the full error message
-        let intervalCount = this.intervals.length;
+        const intervalCount = this.intervals.length;
         if (intervalCount == 1) {
             // @ts-expect-error TS(2339): Property 'intervals' does not exist on type 'Inter... Remove this comment to see the full error message
             const firstInterval = this.intervals[0];

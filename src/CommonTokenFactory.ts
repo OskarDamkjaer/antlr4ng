@@ -4,8 +4,8 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { CommonToken } from './CommonToken.js';
-import { TokenFactory } from './TokenFactory.js';
+import { CommonToken } from "./CommonToken.js";
+import { TokenFactory } from "./TokenFactory.js";
 
 /**
  * This default implementation of {@link TokenFactory} creates
@@ -42,6 +42,7 @@ export class CommonTokenFactory extends TokenFactory {
         } else if (this.copyText && source[1] !== null) {
             t.text = source[1].getText(start, stop);
         }
+
         return t;
     }
 
@@ -49,6 +50,7 @@ export class CommonTokenFactory extends TokenFactory {
         // @ts-expect-error TS(2554): Expected 5 arguments, but got 2.
         const t = new CommonToken(null, type);
         t.text = text;
+
         return t;
     }
 }

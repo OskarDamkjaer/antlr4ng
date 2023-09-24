@@ -6,7 +6,7 @@
 
 import { IntervalSet } from "../misc/IntervalSet.js";
 import { Transition } from "./Transition.js";
-import { TransitionType } from './TransitionType.js';
+import { TransitionType } from "./TransitionType.js";
 
 export class RangeTransition extends Transition {
     label: any;
@@ -25,6 +25,7 @@ export class RangeTransition extends Transition {
         // @ts-expect-error TS(2554): Expected 1 arguments, but got 0.
         const s = new IntervalSet();
         s.addRange(this.start, this.stop);
+
         return s;
     }
 

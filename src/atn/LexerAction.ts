@@ -17,6 +17,7 @@ export class LexerAction {
     hashCode() {
         const hash = new HashCode();
         this.updateHashCode(hash);
+
         return hash.finish();
     }
 

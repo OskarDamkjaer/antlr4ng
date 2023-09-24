@@ -5,7 +5,7 @@
  */
 
 import { Interval } from "../misc/Interval.js";
-import { Token } from '../Token.js';
+import { Token } from "../Token.js";
 import { TerminalNode } from "./TerminalNode.js";
 
 export class TerminalNodeImpl extends TerminalNode {
@@ -43,6 +43,7 @@ export class TerminalNodeImpl extends TerminalNode {
             return Interval.INVALID_INTERVAL;
         }
         const tokenIndex = this.symbol.tokenIndex;
+
         return new Interval(tokenIndex, tokenIndex);
     }
 

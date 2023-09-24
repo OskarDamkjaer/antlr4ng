@@ -39,11 +39,12 @@ export class DFASerializer {
                         buf = buf.concat(this.getEdgeLabel(j));
                         buf = buf.concat("->");
                         buf = buf.concat(this.getStateString(t));
-                        buf = buf.concat('\n');
+                        buf = buf.concat("\n");
                     }
                 }
             }
         }
+
         return buf.length === 0 ? null : buf;
     }
 

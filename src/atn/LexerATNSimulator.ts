@@ -4,20 +4,24 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { Token } from '../Token.js';
-import { Lexer } from './../Lexer.js';
-import { ATN } from './ATN.js';
-import { ATNSimulator } from './ATNSimulator.js';
-import { DFAState } from '../dfa/DFAState.js';
-import { OrderedATNConfigSet } from './OrderedATNConfigSet.js';
-import { PredictionContext } from './PredictionContext.js';
-import { SingletonPredictionContext } from './SingletonPredictionContext.js';
-import { RuleStopState } from './RuleStopState.js';
-import { LexerATNConfig } from './LexerATNConfig.js';
-import { LexerActionExecutor } from './LexerActionExecutor.js';
-import { LexerNoViableAltException } from '../LexerNoViableAltException.js';
+import { Token } from "../Token.js";
+import { Lexer } from "./../Lexer.js";
+import { ATN } from "./ATN.js";
+import { ATNSimulator } from "./ATNSimulator.js";
+import { DFAState } from "../dfa/DFAState.js";
+import { OrderedATNConfigSet } from "./OrderedATNConfigSet.js";
+import { PredictionContext } from "./PredictionContext.js";
+import { SingletonPredictionContext } from "./SingletonPredictionContext.js";
+import { RuleStopState } from "./RuleStopState.js";
+import { LexerATNConfig } from "./LexerATNConfig.js";
+import { LexerActionExecutor } from "./LexerActionExecutor.js";
+import { LexerNoViableAltException } from "../LexerNoViableAltException.js";
 import { TransitionType } from "./TransitionType.js";
 
+/**
+ *
+ * @param sim
+ */
 function resetSimState(sim: any) {
     sim.index = -1;
     sim.line = 0;
@@ -58,6 +62,11 @@ export class LexerATNSimulator extends ATNSimulator {
      * back to its previously accepted state, if any. If the ATN succeeds,
      * then the ATN does the accept and the DFA simulator that invoked it
      * can simply return the predicted token type.</p>
+     *
+     * @param recog
+     * @param atn
+     * @param decisionToDFA
+     * @param sharedContextCache
      */
     constructor(recog: any, atn: any, decisionToDFA: any, sharedContextCache: any) {
         super(atn, sharedContextCache);
@@ -142,6 +151,7 @@ export class LexerATNSimulator extends ATNSimulator {
         if (LexerATNSimulator.debug) {
             console.log("DFA after matchATN: " + this.decisionToDFA[old_mode].toLexerString());
         }
+
         return predict;
     }
 
@@ -211,6 +221,7 @@ export class LexerATNSimulator extends ATNSimulator {
             t = input.LA(1);
             s = target; // flip; current DFA target becomes new src/from state
         }
+
         return this.failOrAccept(this.prevAccept, input, s.configs, t);
     }
 
@@ -221,7 +232,7 @@ export class LexerATNSimulator extends ATNSimulator {
      *
      * @param s The current DFA state
      * @param t The next input symbol
-     * @return The existing target DFA state for the given input symbol
+     * @returns The existing target DFA state for the given input symbol
      * {@code t}, or {@code null} if the target state for this edge is not
      * already cached
      */
@@ -240,6 +251,7 @@ export class LexerATNSimulator extends ATNSimulator {
         if (LexerATNSimulator.debug && target !== null) {
             console.log("reuse state " + s.stateNumber + " edge to " + target.stateNumber);
         }
+
         return target;
     }
 
@@ -251,7 +263,7 @@ export class LexerATNSimulator extends ATNSimulator {
      * @param s The current DFA state
      * @param t The next input symbol
      *
-     * @return The computed target DFA state for the given input symbol
+     * @returns The computed target DFA state for the given input symbol
      * {@code t}. If {@code t} does not lead to a valid DFA state, this method
      * returns {@link //ERROR}.
      */
@@ -268,10 +280,12 @@ export class LexerATNSimulator extends ATNSimulator {
                 // @ts-expect-error TS(2554): Expected 4 arguments, but got 3.
                 this.addDFAEdge(s, t, ATNSimulator.ERROR);
             }
+
             // stop when we can't match any more char
             // @ts-expect-error TS(2339): Property 'ERROR' does not exist on type 'typeof AT... Remove this comment to see the full error message
             return ATNSimulator.ERROR;
         }
+
         // Add an edge from s to target DFA found/created for reach
         return this.addDFAEdge(s, t, null, reach);
     }
@@ -281,6 +295,7 @@ export class LexerATNSimulator extends ATNSimulator {
             const lexerActionExecutor = prevAccept.dfaState.lexerActionExecutor;
             this.accept(input, lexerActionExecutor, this.startIndex,
                 prevAccept.index, prevAccept.line, prevAccept.column);
+
             return prevAccept.dfaState.prediction;
         } else {
             // if no accept and EOF is first char, return EOF
@@ -297,6 +312,11 @@ export class LexerATNSimulator extends ATNSimulator {
      * Given a starting configuration set, figure out all ATN configurations
      * we can reach upon input {@code t}. Parameter {@code reach} is a return
      * parameter.
+     *
+     * @param input
+     * @param closure
+     * @param reach
+     * @param t
      */
     getReachableConfigSet(input: any, closure: any, reach: any, t: any) {
         // this is used to skip processing for configs which have a lower priority
@@ -324,7 +344,7 @@ export class LexerATNSimulator extends ATNSimulator {
                     }
                     // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
                     const treatEofAsEpsilon = (t === Token.EOF);
-                    const config = new LexerATNConfig({ state: target, lexerActionExecutor: lexerActionExecutor }, cfg);
+                    const config = new LexerATNConfig({ state: target, lexerActionExecutor }, cfg);
                     if (this.closure(input, config, reach,
                         currentAltReachedAcceptState, true, treatEofAsEpsilon)) {
                         // any remaining configs for this alt have a lower priority
@@ -368,6 +388,7 @@ export class LexerATNSimulator extends ATNSimulator {
             const cfg = new LexerATNConfig({ state: target, alt: i + 1, context: initialContext }, null);
             this.closure(input, cfg, configs, false, false, false);
         }
+
         return configs;
     }
 
@@ -378,7 +399,13 @@ export class LexerATNSimulator extends ATNSimulator {
      * search from {@code config}, all other (potentially reachable) states for
      * this rule would have a lower priority.
      *
-     * @return {Boolean} {@code true} if an accept state is reached, otherwise
+     * @param input
+     * @param config
+     * @param configs
+     * @param currentAltReachedAcceptState
+     * @param speculative
+     * @param treatEofAsEpsilon
+     * @returns {boolean} {@code true} if an accept state is reached, otherwise
      * {@code false}.
      */
     closure(input: any, config: any, configs: any,
@@ -400,6 +427,7 @@ export class LexerATNSimulator extends ATNSimulator {
             if (config.context === null || config.context.hasEmptyPath()) {
                 if (config.context === null || config.context.isEmpty()) {
                     configs.add(config);
+
                     return true;
                 } else {
                     // @ts-expect-error TS(2339): Property 'EMPTY' does not exist on type 'typeof Pr... Remove this comment to see the full error message
@@ -420,6 +448,7 @@ export class LexerATNSimulator extends ATNSimulator {
                     }
                 }
             }
+
             return currentAltReachedAcceptState;
         }
         // optimization
@@ -436,6 +465,7 @@ export class LexerATNSimulator extends ATNSimulator {
                     currentAltReachedAcceptState, speculative, treatEofAsEpsilon);
             }
         }
+
         return currentAltReachedAcceptState;
     }
 
@@ -491,7 +521,7 @@ export class LexerATNSimulator extends ATNSimulator {
                 // the split operation.
                 const lexerActionExecutor = LexerActionExecutor.append(config.lexerActionExecutor,
                     this.atn.lexerActions[trans.actionIndex]);
-                cfg = new LexerATNConfig({ state: trans.target, lexerActionExecutor: lexerActionExecutor }, config);
+                cfg = new LexerATNConfig({ state: trans.target, lexerActionExecutor }, config);
             } else {
                 // ignore actions in referenced rules
                 cfg = new LexerATNConfig({ state: trans.target }, config);
@@ -508,6 +538,7 @@ export class LexerATNSimulator extends ATNSimulator {
                 }
             }
         }
+
         return cfg;
     }
 
@@ -529,7 +560,7 @@ export class LexerATNSimulator extends ATNSimulator {
      * @param speculative {@code true} if the current index in {@code input} is
      * one character before the predicate's location.
      *
-     * @return {@code true} if the specified predicate evaluates to
+     * @returns {@code true} if the specified predicate evaluates to
      * {@code true}.
      */
     evaluatePredicate(input: any, ruleIndex: any,
@@ -547,6 +578,7 @@ export class LexerATNSimulator extends ATNSimulator {
         const marker = input.mark();
         try {
             this.consume(input);
+
             return this.recog.sempred(null, ruleIndex, predIndex);
         } finally {
             this.column = savedColumn;
@@ -618,6 +650,8 @@ export class LexerATNSimulator extends ATNSimulator {
      * configurations already. This method also detects the first
      * configuration containing an ATN rule stop state. Later, when
      * traversing the DFA, we will know which rule to accept.
+     *
+     * @param configs
      */
     addDFAState(configs: any) {
         const proposed = new DFAState(null, configs);
@@ -644,6 +678,7 @@ export class LexerATNSimulator extends ATNSimulator {
         configs.setReadonly(true);
         newState.configs = configs;
         dfa.states.add(newState);
+
         return newState;
     }
 

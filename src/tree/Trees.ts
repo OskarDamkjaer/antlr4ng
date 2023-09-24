@@ -4,9 +4,9 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { Token } from '../Token.js';
-import { ErrorNode } from './ErrorNode.js';
-import { TerminalNode } from './TerminalNode.js';
+import { Token } from "../Token.js";
+import { ErrorNode } from "./ErrorNode.js";
+import { TerminalNode } from "./TerminalNode.js";
 import { escapeWhitespace } from "../utils/escapeWhitespace.js";
 import { RuleContext } from "../atn/RuleContext.js";
 
@@ -14,10 +14,14 @@ import { RuleContext } from "../atn/RuleContext.js";
 export const Trees = {
     /**
      * Print out a whole tree in LISP form. {@link //getNodeText} is used on the
-     *  node payloads to get the text for the nodes.  Detect
-     *  parse trees and extract data appropriately.
+     * node payloads to get the text for the nodes.  Detect
+     * parse trees and extract data appropriately.
+     *
+     * @param tree
+     * @param ruleNames
+     * @param recog
      */
-    toStringTree: function (tree: any, ruleNames: any, recog: any) {
+    toStringTree (tree: any, ruleNames: any, recog: any) {
         ruleNames = ruleNames || null;
         recog = recog || null;
         if (recog !== null) {
@@ -30,7 +34,7 @@ export const Trees = {
         if (c === 0) {
             return s;
         }
-        let res = "(" + s + ' ';
+        let res = "(" + s + " ";
         if (c > 0) {
             // @ts-expect-error TS(2554): Expected 3 arguments, but got 2.
             s = Trees.toStringTree(tree.getChild(0), ruleNames);
@@ -39,13 +43,14 @@ export const Trees = {
         for (let i = 1; i < c; i++) {
             // @ts-expect-error TS(2554): Expected 3 arguments, but got 2.
             s = Trees.toStringTree(tree.getChild(i), ruleNames);
-            res = res.concat(' ' + s);
+            res = res.concat(" " + s);
         }
         res = res.concat(")");
+
         return res;
     },
 
-    getNodeText: function (t: any, ruleNames: any, recog: any) {
+    getNodeText (t: any, ruleNames: any, recog: any) {
         ruleNames = ruleNames || null;
         recog = recog || null;
         if (recog !== null) {
@@ -59,6 +64,7 @@ export const Trees = {
                 if (altNumber != 0) {
                     return ruleNames[t.ruleIndex] + ":" + altNumber;
                 }
+
                 return ruleNames[t.ruleIndex];
             } else if (t instanceof ErrorNode) {
                 return t.toString();
@@ -75,49 +81,57 @@ export const Trees = {
         if (payload instanceof Token) {
             return payload.text;
         }
+
         return t.getPayload().toString();
     },
 
     /**
      * Return ordered list of all children of this node
+     *
+     * @param t
      */
-    getChildren: function (t: any) {
+    getChildren (t: any) {
         const list = [];
         for (let i = 0; i < t.getChildCount(); i++) {
             list.push(t.getChild(i));
         }
+
         return list;
     },
 
     /**
      * Return a list of all ancestors of this node.  The first node of
      * list is the root and the last is the parent of this node.
+     *
+     * @param t
      */
-    getAncestors: function (t: any) {
+    getAncestors (t: any) {
         let ancestors: any = [];
         t = t.getParent();
         while (t !== null) {
             ancestors = [t].concat(ancestors);
             t = t.getParent();
         }
+
         return ancestors;
     },
 
-    findAllTokenNodes: function (t: any, ttype: any) {
+    findAllTokenNodes (t: any, ttype: any) {
         return Trees.findAllNodes(t, ttype, true);
     },
 
-    findAllRuleNodes: function (t: any, ruleIndex: any) {
+    findAllRuleNodes (t: any, ruleIndex: any) {
         return Trees.findAllNodes(t, ruleIndex, false);
     },
 
-    findAllNodes: function (t: any, index: any, findTokens: any) {
+    findAllNodes (t: any, index: any, findTokens: any) {
         const nodes: any = [];
         Trees._findAllNodes(t, index, findTokens, nodes);
+
         return nodes;
     },
 
-    _findAllNodes: function (t: any, index: any, findTokens: any, nodes: any) {
+    _findAllNodes (t: any, index: any, findTokens: any, nodes: any) {
         // check this node (the root) first
         if (findTokens && (t instanceof TerminalNode)) {
             // @ts-expect-error TS(2339): Property 'symbol' does not exist on type 'Terminal... Remove this comment to see the full error message
@@ -135,11 +149,12 @@ export const Trees = {
         }
     },
 
-    descendants: function (t: any) {
+    descendants (t: any) {
         let nodes = [t];
         for (let i = 0; i < t.getChildCount(); i++) {
             nodes = nodes.concat(Trees.descendants(t.getChild(i)));
         }
+
         return nodes;
-    }
+    },
 };

@@ -19,6 +19,7 @@ export class LexerATNConfig extends ATNConfig {
         this.passedThroughNonGreedyDecision = config !== null ? this.checkNonGreedyDecision(config, this.state) : false;
         this.hashCodeForConfigSet = LexerATNConfig.prototype.hashCode;
         this.equalsForConfigSet = LexerATNConfig.prototype.equals;
+
         return this;
     }
 

@@ -17,8 +17,8 @@ export class XPathTokenElement extends XPathElement {
 
     evaluate(t: any) {
         // return all children of t that match nodeName
-        let nodes = [];
-        for (let c of Trees.getChildren(t)) {
+        const nodes = [];
+        for (const c of Trees.getChildren(t)) {
             if (c instanceof TerminalNode) {
                 // @ts-expect-error TS(2339): Property 'symbol' does not exist on type 'Terminal... Remove this comment to see the full error message
                 if ((c.symbol.type === this.tokenType && !this.invert) ||
@@ -28,6 +28,7 @@ export class XPathTokenElement extends XPathElement {
                 }
             }
         }
+
         return nodes;
     }
 }

@@ -16,7 +16,7 @@ import { CharStream } from "./CharStream.js";
  */
 export const CharStreams = {
     // Creates an InputStream from a string.
-    fromString: function (str: any) {
+    fromString (str: any) {
         return new CharStream(str, true);
     },
 
@@ -27,8 +27,13 @@ export const CharStreams = {
      *
      * Invokes onLoad(result) on success, onError(error) on
      * failure.
+     *
+     * @param blob
+     * @param encoding
+     * @param onLoad
+     * @param onError
      */
-    fromBlob: function (blob: any, encoding: any, onLoad: any, onError: any) {
+    fromBlob (blob: any, encoding: any, onLoad: any, onError: any) {
         const reader = new window.FileReader();
         reader.onload = function (e) {
             // @ts-expect-error TS(2531): Object is possibly 'null'.
@@ -43,8 +48,11 @@ export const CharStreams = {
      * Creates an InputStream from a Buffer given the
      * encoding of the bytes in that buffer (defaults to 'utf8' if
      * encoding is null).
+     *
+     * @param buffer
+     * @param encoding
      */
-    fromBuffer: function (buffer: any, encoding: any) {
+    fromBuffer (buffer: any, encoding: any) {
         return new CharStream(buffer.toString(encoding), true);
     },
 };

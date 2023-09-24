@@ -39,6 +39,8 @@ export class LexerCustomAction extends LexerAction {
     /**
      * <p>Custom actions are implemented by calling {@link Lexer//action} with the
      * appropriate rule and action indexes.</p>
+     *
+     * @param lexer
      */
     execute(lexer: any) {
         lexer.action(null, this.ruleIndex, this.actionIndex);

@@ -36,6 +36,5 @@ export class EmptyPredictionContext extends SingletonPredictionContext {
     }
 }
 
-
 // @ts-expect-error TS(2339): Property 'EMPTY' does not exist on type 'typeof Pr... Remove this comment to see the full error message
 PredictionContext.EMPTY = new EmptyPredictionContext();

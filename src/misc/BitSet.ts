@@ -74,12 +74,13 @@ export class BitSet {
                 w ^= t;
             }
         }
+
         return result;
     }
 
     nextSetBit(value: any) {
         // Iterate over all set bits.
-        for (let index of this) {
+        for (const index of this) {
             // Use the first index > than the specified value index.
             // @ts-expect-error TS(2532): Object is possibly 'undefined'.
             if (index > value) {
@@ -115,8 +116,8 @@ export class BitSet {
         const length = this.data.length;
         let currentIndex = 0;
         let currentWord = this.data[currentIndex];
-        let bc = this.bitCount;
-        let words = this.data;
+        const bc = this.bitCount;
+        const words = this.data;
 
         return {
             [Symbol.iterator]() {

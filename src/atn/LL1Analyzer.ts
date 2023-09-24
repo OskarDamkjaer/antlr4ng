@@ -4,17 +4,17 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { Token } from '../Token.js';
-import { ATNConfig } from './ATNConfig.js';
-import { IntervalSet } from '../misc/IntervalSet.js';
-import { RuleStopState } from './RuleStopState.js';
-import { RuleTransition } from './RuleTransition.js';
-import { NotSetTransition } from './NotSetTransition.js';
-import { WildcardTransition } from './WildcardTransition.js';
-import { AbstractPredicateTransition } from './AbstractPredicateTransition.js';
-import { predictionContextFromRuleContext } from './PredictionContextUtils.js';
-import { PredictionContext } from './PredictionContext.js';
-import { SingletonPredictionContext } from './SingletonPredictionContext.js';
+import { Token } from "../Token.js";
+import { ATNConfig } from "./ATNConfig.js";
+import { IntervalSet } from "../misc/IntervalSet.js";
+import { RuleStopState } from "./RuleStopState.js";
+import { RuleTransition } from "./RuleTransition.js";
+import { NotSetTransition } from "./NotSetTransition.js";
+import { WildcardTransition } from "./WildcardTransition.js";
+import { AbstractPredicateTransition } from "./AbstractPredicateTransition.js";
+import { predictionContextFromRuleContext } from "./PredictionContextUtils.js";
+import { PredictionContext } from "./PredictionContext.js";
+import { SingletonPredictionContext } from "./SingletonPredictionContext.js";
 import { BitSet } from "../misc/BitSet.js";
 import { HashSet } from "../misc/HashSet.js";
 
@@ -32,7 +32,7 @@ export class LL1Analyzer {
      * element at index <em>i</em> of the result will be {@code null}.
      *
      * @param s the ATN state
-     * @return the expected symbols for each outgoing transition of {@code s}.
+     * @returns the expected symbols for each outgoing transition of {@code s}.
      */
     getDecisionLookahead(s: any) {
         if (s === null) {
@@ -56,6 +56,7 @@ export class LL1Analyzer {
                 look[alt] = null;
             }
         }
+
         return look;
     }
 
@@ -74,7 +75,7 @@ export class LL1Analyzer {
      * @param ctx the complete parser context, or {@code null} if the context
      * should be ignored
      *
-     * @return The set of tokens that can follow {@code s} in the ATN in the
+     * @returns The set of tokens that can follow {@code s} in the ATN in the
      * specified {@code ctx}.
      */
     LOOK(s: any, stopState: any, ctx: any) {
@@ -85,6 +86,7 @@ export class LL1Analyzer {
         const lookContext = ctx !== null ? predictionContextFromRuleContext(s.atn, ctx) : null;
         // @ts-expect-error TS(2554): Expected 2 arguments, but got 0.
         this._LOOK(s, stopState, lookContext, r, new HashSet(), new BitSet(), seeThruPreds, true);
+
         return r;
     }
 
@@ -128,10 +130,12 @@ export class LL1Analyzer {
             if (ctx === null) {
                 // @ts-expect-error TS(2339): Property 'EPSILON' does not exist on type 'typeof ... Remove this comment to see the full error message
                 look.addOne(Token.EPSILON);
+
                 return;
             } else if (ctx.isEmpty() && addEOF) {
                 // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
                 look.addOne(Token.EOF);
+
                 return;
             }
         }
@@ -139,10 +143,12 @@ export class LL1Analyzer {
             if (ctx === null) {
                 // @ts-expect-error TS(2339): Property 'EPSILON' does not exist on type 'typeof ... Remove this comment to see the full error message
                 look.addOne(Token.EPSILON);
+
                 return;
             } else if (ctx.isEmpty() && addEOF) {
                 // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
                 look.addOne(Token.EOF);
+
                 return;
             }
             // @ts-expect-error TS(2339): Property 'EMPTY' does not exist on type 'typeof Pr... Remove this comment to see the full error message
@@ -160,6 +166,7 @@ export class LL1Analyzer {
                         calledRuleStack.set(s.ruleIndex);
                     }
                 }
+
                 return;
             }
         }

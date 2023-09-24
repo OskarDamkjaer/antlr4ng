@@ -56,7 +56,7 @@ export class DFA {
    * Get the start state for a specific precedence value.
    *
    * @param precedence The current precedence.
-   * @return The start state corresponding to the specified precedence, or
+   * @returns The start state corresponding to the specified precedence, or
    * {@code null} if no start state exists for the specified precedence.
    *
    * @throws IllegalStateException if this is not a precedence DFA.
@@ -70,6 +70,7 @@ export class DFA {
     if (precedence < 0 || precedence >= this.s0.edges.length) {
       return null;
     }
+
     return this.s0.edges[precedence] || null;
   }
 
@@ -139,6 +140,7 @@ export class DFA {
    */
   sortedStates() {
     const list = this._states.values();
+
     return list.sort(function (a: any, b: any) {
       return a.stateNumber - b.stateNumber;
     });
@@ -151,6 +153,7 @@ export class DFA {
       return "";
     }
     const serializer = new DFASerializer(this, literalNames, symbolicNames);
+
     return serializer.toString();
   }
 
@@ -159,6 +162,7 @@ export class DFA {
       return "";
     }
     const serializer = new LexerDFASerializer(this);
+
     return serializer.toString();
   }
 

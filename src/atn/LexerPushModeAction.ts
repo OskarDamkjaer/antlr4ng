@@ -21,6 +21,8 @@ export class LexerPushModeAction extends LexerAction {
     /**
      * <p>This action is implemented by calling {@link Lexer//pushMode} with the
      * value provided by {@link //getMode}.</p>
+     *
+     * @param lexer
      */
     execute(lexer: any) {
         lexer.pushMode(this.mode);

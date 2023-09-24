@@ -4,8 +4,8 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { BaseErrorListener } from './BaseErrorListener.js';
-import { Interval } from './misc/Interval.js';
+import { BaseErrorListener } from "./BaseErrorListener.js";
+import { Interval } from "./misc/Interval.js";
 import { BitSet } from "./misc/BitSet.js";
 
 /**
@@ -77,6 +77,7 @@ export class DiagnosticErrorListener extends BaseErrorListener {
         if (ruleName === null || ruleName.length === 0) {
             return "" + decision;
         }
+
         return `${decision} (${ruleName})`;
     }
 
@@ -88,7 +89,7 @@ export class DiagnosticErrorListener extends BaseErrorListener {
      * @param reportedAlts The set of conflicting or ambiguous alternatives, as
      * reported by the parser.
      * @param configs The conflicting or ambiguous configuration set.
-     * @return Returns {@code reportedAlts} if it is not {@code null}, otherwise
+     * @returns Returns {@code reportedAlts} if it is not {@code null}, otherwise
      * returns the set of alternatives represented in {@code configs}.
      */
     getConflictingAlts(reportedAlts: any, configs: any) {
@@ -100,6 +101,7 @@ export class DiagnosticErrorListener extends BaseErrorListener {
             // @ts-expect-error TS(2339): Property 'add' does not exist on type 'BitSet'.
             result.add(configs.items[i].alt);
         }
+
         return `{${result.values().join(", ")}}`;
     }
 }

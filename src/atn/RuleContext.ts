@@ -4,15 +4,16 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { Interval } from '../misc/Interval.js';
+import { Interval } from "../misc/Interval.js";
 import { ParseTree } from "../tree/ParseTree.js";
-import { Trees } from '../tree/Trees.js';
+import { Trees } from "../tree/Trees.js";
 
 export class RuleContext extends ParseTree {
     _parent: any;
     children: any;
     invokingState: any;
-    /** A rule context is a record of a single rule invocation. It knows
+    /**
+     * A rule context is a record of a single rule invocation. It knows
      * which context invoked it, if any. If there is no parent context, then
      * naturally the invoking state is not valid.  The parent link
      * provides a chain upwards from the current rule invocation to the root
@@ -30,6 +31,8 @@ export class RuleContext extends ParseTree {
      * For the special case of parsers, we use the subclass
      * ParserRuleContext.
      *
+     * @param parent
+     * @param invokingState
      * @see ParserRuleContext
      */
     constructor(parent: any, invokingState: any) {
@@ -60,6 +63,7 @@ export class RuleContext extends ParseTree {
             p = p.parent;
             n += 1;
         }
+
         return n;
     }
 
@@ -126,6 +130,8 @@ export class RuleContext extends ParseTree {
      * trees that don't need it.  Create
      * a subclass of ParserRuleContext with backing field and set
      * option contextSuperClass.
+     *
+     * @param altNumber
      */
     setAltNumber(altNumber: any) {
     }
@@ -149,6 +155,9 @@ export class RuleContext extends ParseTree {
     /**
      * Print out a whole tree, not just a node, in LISP format
      * (root child1 .. childN). Print just a node if this is a leaf.
+     *
+     * @param ruleNames
+     * @param recog
      */
     toStringTree(ruleNames: any, recog: any) {
         return Trees.toStringTree(this, ruleNames, recog);
@@ -176,6 +185,7 @@ export class RuleContext extends ParseTree {
             p = p.parent;
         }
         s += "]";
+
         return s;
     }
 }

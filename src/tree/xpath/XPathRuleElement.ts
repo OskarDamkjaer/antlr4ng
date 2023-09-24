@@ -17,8 +17,8 @@ export class XPathRuleElement extends XPathElement {
 
     evaluate(t: any) {
         // return all children of t that match nodeName
-        let nodes = [];
-        for (let c of Trees.getChildren(t)) {
+        const nodes = [];
+        for (const c of Trees.getChildren(t)) {
             if (c instanceof ParserRuleContext) {
                 if ((c.ruleIndex === this.ruleIndex && !this.invert) ||
                     (c.ruleIndex !== this.ruleIndex && this.invert)) {
@@ -26,6 +26,7 @@ export class XPathRuleElement extends XPathElement {
                 }
             }
         }
+
         return nodes;
     }
 }

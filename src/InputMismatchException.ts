@@ -15,7 +15,7 @@ export class InputMismatchException extends RecognitionException {
   constructor(recognizer: any) {
     super({
       message: "",
-      recognizer: recognizer,
+      recognizer,
       input: recognizer.inputStream,
       ctx: recognizer._ctx,
     });

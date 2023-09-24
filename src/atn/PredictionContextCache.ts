@@ -24,6 +24,8 @@ export class PredictionContextCache {
      * Add a context to the cache and return it. If the context already exists,
      * return that one instead and do not add a new context to the cache.
      * Protect shared cache from unsafe thread access.
+     *
+     * @param ctx
      */
     add(ctx: any) {
         // @ts-expect-error TS(2339): Property 'EMPTY' does not exist on type 'typeof Pr... Remove this comment to see the full error message
@@ -36,6 +38,7 @@ export class PredictionContextCache {
             return existing;
         }
         this.cache.set(ctx, ctx);
+
         return ctx;
     }
 

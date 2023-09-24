@@ -26,6 +26,7 @@ export class ArrayPredictionContext extends PredictionContext {
         super(hashCode);
         this.parents = parents;
         this.returnStates = returnStates;
+
         return this;
     }
 
@@ -79,6 +80,7 @@ export class ArrayPredictionContext extends PredictionContext {
                     s = s + "null";
                 }
             }
+
             return s + "]";
         }
     }

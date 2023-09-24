@@ -73,7 +73,7 @@ export class XPath {
     // TODO: check for invalid token/rule names, bad syntax
 
     split(path: any) {
-        let lexer = new (class extends XPathLexer {
+        const lexer = new (class extends XPathLexer {
             constructor(stream: any) {
                 super(stream);
             }
@@ -84,29 +84,29 @@ export class XPath {
         lexer.removeErrorListeners();
         lexer.addErrorListener(new XPathLexerErrorListener());
         // @ts-expect-error TS(2554): Expected 2 arguments, but got 1.
-        let tokenStream = new CommonTokenStream(lexer);
+        const tokenStream = new CommonTokenStream(lexer);
         try {
             tokenStream.fill();
         }
         catch (e) {
             if (e instanceof LexerNoViableAltException) {
-                let pos = lexer.column;
-                let msg = "Invalid tokens or characters at index " + pos + " in path '" + path + "' -- " + e.message;
+                const pos = lexer.column;
+                const msg = "Invalid tokens or characters at index " + pos + " in path '" + path + "' -- " + e.message;
                 throw new RangeError(msg);
             }
             throw e;
         }
 
         // @ts-expect-error TS(2554): Expected 3 arguments, but got 0.
-        let tokens = tokenStream.getTokens();
+        const tokens = tokenStream.getTokens();
         // console.log("path=" + path + "=>" + tokens);
-        let elements = [];
-        let n = tokens.length;
+        const elements = [];
+        const n = tokens.length;
         let i = 0;
 
         loop:
         while (i < n) {
-            let el = tokens[i];
+            const el = tokens[i];
             let next;
             switch (el.type) {
                 case XPathLexer.ROOT:
@@ -119,7 +119,7 @@ export class XPath {
                         i++;
                         next = tokens[i];
                     }
-                    let pathElement = this.getXPathElement(next, anywhere);
+                    const pathElement = this.getXPathElement(next, anywhere);
                     pathElement.invert = invert;
                     elements.push(pathElement);
                     i++;
@@ -144,6 +144,7 @@ export class XPath {
                 }
             }
         }
+
         return elements;
     }
 
@@ -151,6 +152,9 @@ export class XPath {
      * Convert word like `*` or `ID` or `expr` to a path
      * element. `anywhere` is `true` if `//` precedes the
      * word.
+     *
+     * @param wordToken
+     * @param anywhere
      */
     getXPathElement(wordToken: any, anywhere: any) {
         // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
@@ -158,13 +162,13 @@ export class XPath {
             throw new Error("Missing path element at end of path");
         }
 
-        let word = wordToken.text;
+        const word = wordToken.text;
         if (word == null) {
             throw new Error("Expected wordToken to have text content.");
         }
 
-        let ttype = this.parser.getTokenType(word);
-        let ruleIndex = this.parser.getRuleIndex(word);
+        const ttype = this.parser.getTokenType(word);
+        const ruleIndex = this.parser.getRuleIndex(word);
         switch (wordToken.type) {
             case XPathLexer.WILDCARD:
                 return anywhere ?
@@ -178,6 +182,7 @@ export class XPath {
                         wordToken.start +
                         " isn't a valid token name");
                 }
+
                 return anywhere ?
                     new XPathTokenAnywhereElement(word, ttype) :
                     new XPathTokenElement(word, ttype);
@@ -187,6 +192,7 @@ export class XPath {
                         wordToken.start +
                         " isn't a valid rule name");
                 }
+
                 return anywhere ?
                     new XPathRuleAnywhereElement(word, ruleIndex) :
                     new XPathRuleElement(word, ruleIndex);
@@ -194,30 +200,33 @@ export class XPath {
     }
 
     static findAll(tree: any, xpath: any, parser: any) {
-        let p = new XPath(parser, xpath);
+        const p = new XPath(parser, xpath);
+
         return p.evaluate(tree);
     }
 
     /**
      * Return a list of all nodes starting at `t` as root that satisfy the
      * path. The root `/` is relative to the node passed to {@link evaluate}.
+     *
+     * @param t
      */
     evaluate(t: any) {
         // @ts-expect-error TS(2554): Expected 2 arguments, but got 0.
-        let dummyRoot = new ParserRuleContext();
+        const dummyRoot = new ParserRuleContext();
         dummyRoot.addChild(t);
 
         let work = new Set([dummyRoot]);
 
         let i = 0;
         while (i < this.elements.length) {
-            let next = new Set();
-            for (let node of work) {
+            const next = new Set();
+            for (const node of work) {
                 if (node.getChildCount() > 0) {
                     // only try to match next element if it has children
                     // e.g., //func/*/stat might have a token node for which
                     // we can't go looking for stat nodes.
-                    let matching = this.elements[i].evaluate(node);
+                    const matching = this.elements[i].evaluate(node);
                     matching.forEach(next.add, next);
                 }
             }

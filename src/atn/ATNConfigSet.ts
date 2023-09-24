@@ -4,25 +4,34 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { ATN } from './ATN.js';
-import { SemanticContext } from './SemanticContext.js';
-import { merge } from './PredictionContextUtils.js';
+import { ATN } from "./ATN.js";
+import { SemanticContext } from "./SemanticContext.js";
+import { merge } from "./PredictionContextUtils.js";
 import { arrayToString } from "../utils/arrayToString.js";
 import { HashSet } from "../misc/HashSet.js";
 import { equalArrays } from "../utils/equalArrays.js";
 import { HashCode } from "../misc/HashCode.js";
 
+/**
+ *
+ * @param c
+ */
 function hashATNConfig(c: any) {
     return c.hashCodeForConfigSet();
 }
 
+/**
+ *
+ * @param a
+ * @param b
+ */
 function equalATNConfigs(a: any, b: any) {
     if (a === b) {
         return true;
     } else if (a === null || b === null) {
         return false;
     } else
-        return a.equalsForConfigSet(b);
+        {return a.equalsForConfigSet(b);}
 }
 
 /**
@@ -97,6 +106,9 @@ export class ATNConfigSet {
      *
      * <p>This method updates {@link //dipsIntoOuterContext} and
      * {@link //hasSemanticContext} when necessary.</p>
+     *
+     * @param config
+     * @param mergeCache
      */
     add(config: any, mergeCache: any) {
         if (mergeCache === undefined) {
@@ -116,6 +128,7 @@ export class ATNConfigSet {
         if (existing === config) {
             this.cachedHashCode = -1;
             this.configs.push(config); // track order here
+
             return true;
         }
         // a previous (s,i,pi,_), merge with it and save result
@@ -132,6 +145,7 @@ export class ATNConfigSet {
             existing.precedenceFilterSuppressed = true;
         }
         existing.context = merged; // replace context; no need to alt mapping
+
         return true;
     }
 
@@ -141,6 +155,7 @@ export class ATNConfigSet {
         for (let i = 0; i < this.configs.length; i++) {
             states.add(this.configs[i].state);
         }
+
         return states;
     }
 
@@ -153,6 +168,7 @@ export class ATNConfigSet {
                 preds.push(c.semanticContext);
             }
         }
+
         return preds;
     }
 
@@ -174,6 +190,7 @@ export class ATNConfigSet {
             // @ts-expect-error TS(2554): Expected 2 arguments, but got 1.
             this.add(coll[i]);
         }
+
         return false;
     }
 
@@ -192,6 +209,7 @@ export class ATNConfigSet {
         const hash = new HashCode();
         // @ts-expect-error TS(2554): Expected 0 arguments, but got 1.
         hash.update(this.configs);
+
         return hash.finish();
     }
 
@@ -214,6 +232,7 @@ export class ATNConfigSet {
         if (this.configLookup === null) {
             throw "This method is not implemented for readonly sets.";
         }
+
         return this.configLookup.contains(item);
     }
 
@@ -221,6 +240,7 @@ export class ATNConfigSet {
         if (this.configLookup === null) {
             throw "This method is not implemented for readonly sets.";
         }
+
         return this.configLookup.containsFast(item);
     }
 

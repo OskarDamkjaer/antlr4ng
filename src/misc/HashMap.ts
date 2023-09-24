@@ -29,13 +29,16 @@ export class HashMap {
                 if (this.equalsFunction(key, entry.key)) {
                     const oldValue = entry.value;
                     entry.value = value;
+
                     return oldValue;
                 }
             }
-            entries.push({ key: key, value: value });
+            entries.push({ key, value });
+
             return value;
         } else {
-            this.data[hashKey] = [{ key: key, value: value }];
+            this.data[hashKey] = [{ key, value }];
+
             return value;
         }
     }
@@ -47,9 +50,10 @@ export class HashMap {
             for (let i = 0; i < entries.length; i++) {
                 const entry = entries[i];
                 if (this.equalsFunction(key, entry.key))
-                    return true;
+                    {return true;}
             }
         }
+
         return false;
     }
 
@@ -60,31 +64,33 @@ export class HashMap {
             for (let i = 0; i < entries.length; i++) {
                 const entry = entries[i];
                 if (this.equalsFunction(key, entry.key))
-                    return entry.value;
+                    {return entry.value;}
             }
         }
+
         return null;
     }
 
     entries() {
         // @ts-expect-error TS(2550): Property 'flatMap' does not exist on type 'string[... Remove this comment to see the full error message
-        return Object.keys(this.data).filter(key => key.startsWith(HASH_KEY_PREFIX)).flatMap((key: any) => this.data[key], this);
+        return Object.keys(this.data).filter((key) => {return key.startsWith(HASH_KEY_PREFIX);}).flatMap((key: any) => {return this.data[key];}, this);
     }
 
     getKeys() {
-        return this.entries().map((e: any) => e.key);
+        return this.entries().map((e: any) => {return e.key;});
     }
 
     getValues() {
-        return this.entries().map((e: any) => e.value);
+        return this.entries().map((e: any) => {return e.value;});
     }
 
     toString() {
-        const ss = this.entries().map((e: any) => '{' + e.key + ':' + e.value + '}');
-        return '[' + ss.join(", ") + ']';
+        const ss = this.entries().map((e: any) => {return "{" + e.key + ":" + e.value + "}";});
+
+        return "[" + ss.join(", ") + "]";
     }
 
     get length() {
-        return Object.keys(this.data).filter(key => key.startsWith(HASH_KEY_PREFIX)).map(key => this.data[key].length, this).reduce((accum, item) => accum + item, 0);
+        return Object.keys(this.data).filter((key) => {return key.startsWith(HASH_KEY_PREFIX);}).map((key) => {return this.data[key].length;}, this).reduce((accum, item) => {return accum + item;}, 0);
     }
 }

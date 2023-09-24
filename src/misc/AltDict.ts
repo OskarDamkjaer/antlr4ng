@@ -19,6 +19,6 @@ export class AltDict {
     }
 
     values() {
-        return Object.keys(this.data).filter(key => key.startsWith("k-")).map(key => this.data[key], this);
+        return Object.keys(this.data).filter((key) => {return key.startsWith("k-");}).map((key) => {return this.data[key];}, this);
     }
 }

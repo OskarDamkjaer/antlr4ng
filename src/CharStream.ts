@@ -4,7 +4,7 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { Token } from './Token.js';
+import { Token } from "./Token.js";
 import { Interval } from "./misc/Interval.js";
 import { IntStream } from "./IntStream.js";
 
@@ -73,6 +73,7 @@ export class CharStream {
             // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
             return Token.EOF;
         }
+
         return this.data[pos];
     }
 
@@ -87,10 +88,13 @@ export class CharStream {
     /**
      * consume() ahead until p==_index; can't just set p=_index as we must
      * update line and column. If we seek backwards, just set p
+     *
+     * @param _index
      */
     seek(_index: any) {
         if (_index <= this._index) {
             this._index = _index; // just jump; don't update stream state (line,
+
             // ...)
             return;
         }
@@ -118,6 +122,7 @@ export class CharStream {
                 for (let i = start; i <= stop; i++) {
                     result += String.fromCodePoint(this.data[i]);
                 }
+
                 return result;
             } else {
                 return this.stringData.slice(start, stop + 1);
