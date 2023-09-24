@@ -30,7 +30,9 @@
 import { LexerAction } from "./LexerAction.js";
 
 export class LexerIndexedCustomAction extends LexerAction {
-    constructor(offset, action) {
+    action: any;
+    offset: any;
+    constructor(offset: any, action: any) {
         super(action.actionType);
         this.offset = offset;
         this.action = action;
@@ -40,17 +42,19 @@ export class LexerIndexedCustomAction extends LexerAction {
     /**
      * <p>This method calls {@link //execute} on the result of {@link //getAction}
      * using the provided {@code lexer}.</p>
+     *
+     * @param lexer
      */
-    execute(lexer) {
+    execute(lexer: any) {
         // assume the input stream position was properly set by the calling code
         this.action.execute(lexer);
     }
 
-    updateHashCode(hash) {
+    updateHashCode(hash: any) {
         hash.update(this.actionType, this.offset, this.action);
     }
 
-    equals(other) {
+    equals(other: any) {
         if (this === other) {
             return true;
         } else if (!(other instanceof LexerIndexedCustomAction)) {

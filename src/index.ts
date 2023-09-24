@@ -4,25 +4,25 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { Token } from './Token.js';
+import { Token } from "./Token.js";
 import { TokenFactory } from "./TokenFactory.js";
-import { CommonToken } from './CommonToken.js';
-import { InputStream } from './InputStream.js';
-import { CharStream } from './CharStream.js';
-import { CharStreams } from './CharStreams.js';
-import { CommonTokenStream } from './CommonTokenStream.js';
-import { Lexer } from './Lexer.js';
-import { Parser } from './Parser.js';
-import { TokenStream } from './TokenStream.js';
-import { TokenStreamRewriter } from './TokenStreamRewriter.js';
+import { CommonToken } from "./CommonToken.js";
+import { InputStream } from "./InputStream.js";
+import { CharStream } from "./CharStream.js";
+import { CharStreams } from "./CharStreams.js";
+import { CommonTokenStream } from "./CommonTokenStream.js";
+import { Lexer } from "./Lexer.js";
+import { Parser } from "./Parser.js";
+import { TokenStream } from "./TokenStream.js";
+import { TokenStreamRewriter } from "./TokenStreamRewriter.js";
 import { Vocabulary } from "./Vocabulary.js";
 import { LexerInterpreter } from "./LexerInterpreter.js";
 import { ParserInterpreter } from "./ParserInterpreter.js";
 import { InterpreterRuleContext } from "./InterpreterRuleContext.js";
 
-import { RuleContext } from './atn/RuleContext.js';
-import { ParserRuleContext } from './ParserRuleContext.js';
-import { ATN } from './atn/ATN.js';
+import { RuleContext } from "./atn/RuleContext.js";
+import { ParserRuleContext } from "./ParserRuleContext.js";
+import { ATN } from "./atn/ATN.js";
 import { ATNState } from "./atn/ATNState.js";
 
 import { BlockStartState } from "./atn/BlockStartState.js";
@@ -38,13 +38,13 @@ import { TokensStartState } from "./atn/TokensStartState.js";
 
 import { ATNConfig } from "./atn/ATNConfig.js";
 import { ATNConfigSet } from "./atn/ATNConfigSet.js";
-import { PredictionMode } from './atn/PredictionMode.js';
-import { LL1Analyzer } from './atn/LL1Analyzer.js';
-import { ATNDeserializer } from './atn/ATNDeserializer.js';
+import { PredictionMode } from "./atn/PredictionMode.js";
+import { LL1Analyzer } from "./atn/LL1Analyzer.js";
+import { ATNDeserializer } from "./atn/ATNDeserializer.js";
 import { ATNSimulator } from "./atn/ATNSimulator.js";
-import { LexerATNSimulator } from './atn/LexerATNSimulator.js';
-import { ParserATNSimulator } from './atn/ParserATNSimulator.js';
-import { PredictionContextCache } from './atn/PredictionContextCache.js';
+import { LexerATNSimulator } from "./atn/LexerATNSimulator.js";
+import { ParserATNSimulator } from "./atn/ParserATNSimulator.js";
+import { PredictionContextCache } from "./atn/PredictionContextCache.js";
 import { ATNStateType } from "./atn/ATNStateType.js";
 import { NotSetTransition } from "./atn/NotSetTransition.js";
 
@@ -61,8 +61,8 @@ import { BaseErrorListener } from "./BaseErrorListener.js";
 import { DiagnosticErrorListener } from "./DiagnosticErrorListener.js";
 import { InputMismatchException } from "./InputMismatchException.js";
 
-import { Interval } from './misc/Interval.js';
-import { IntervalSet } from './misc/IntervalSet.js';
+import { Interval } from "./misc/Interval.js";
+import { IntervalSet } from "./misc/IntervalSet.js";
 import { ParseTreeListener } from "./tree/ParseTreeListener.js";
 import { ParseTreeVisitor } from "./tree/ParseTreeVisitor.js";
 import { ParseTreeWalker } from "./tree/ParseTreeWalker.js";
@@ -86,7 +86,7 @@ export default {
     ParseCancellationException, arrayToString, Vocabulary, TokenStream, Transition, TransitionType, TokenFactory,
     XPath, ATNSimulator, TokenStreamRewriter, ErrorNode, InputMismatchException,
     BlockStartState, BasicState, DecisionState, PlusBlockStartState, StarBlockStartState, StarLoopEntryState,
-    PlusLoopbackState, StarLoopbackState, LoopEndState, TokensStartState, NotSetTransition
+    PlusLoopbackState, StarLoopbackState, LoopEndState, TokensStartState, NotSetTransition,
 };
 
 export {
@@ -99,5 +99,5 @@ export {
     ParseCancellationException, arrayToString, Vocabulary, TokenStream, Transition, TransitionType, TokenFactory,
     XPath, ATNSimulator, TokenStreamRewriter, ErrorNode, InputMismatchException,
     BlockStartState, BasicState, DecisionState, PlusBlockStartState, StarBlockStartState, StarLoopEntryState,
-    PlusLoopbackState, StarLoopbackState, LoopEndState, TokensStartState, NotSetTransition
+    PlusLoopbackState, StarLoopbackState, LoopEndState, TokensStartState, NotSetTransition,
 };

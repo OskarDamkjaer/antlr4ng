@@ -6,6 +6,10 @@
 
 import { stringHashCode } from "./stringHashCode.js";
 
-export function standardHashCodeFunction(a) {
-    return a ? typeof a === 'string' ? stringHashCode(a) : a.hashCode() : -1;
+/**
+ *
+ * @param a
+ */
+export function standardHashCodeFunction(a: any) {
+    return a ? typeof a === "string" ? stringHashCode(a) : a.hashCode() : -1;
 }

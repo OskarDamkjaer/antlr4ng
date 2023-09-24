@@ -13,10 +13,11 @@ export class ParseTreeWalker {
      * with depth-first search. On each node, {@link ParseTreeWalker//enterRule} is called before
      * recursively walking down into child nodes, then
      * {@link ParseTreeWalker//exitRule} is called after the recursive call to wind up.
+     *
      * @param listener The listener used by the walker to process grammar rules
      * @param t The parse tree to be walked on
      */
-    walk(listener, t) {
+    walk(listener: any, t: any) {
         const errorNode = t instanceof ErrorNode ||
             (t.isErrorNode !== undefined && t.isErrorNode());
         if (errorNode) {
@@ -36,10 +37,11 @@ export class ParseTreeWalker {
     /**
      * Enters a grammar rule by first triggering the generic event {@link ParseTreeListener//enterEveryRule}
      * then by triggering the event specific to the given parse tree node
+     *
      * @param listener The listener responding to the trigger events
      * @param r The grammar rule containing the rule context
      */
-    enterRule(listener, r) {
+    enterRule(listener: any, r: any) {
         const ctx = r.ruleContext;
         listener.enterEveryRule(ctx);
         ctx.enterRule(listener);
@@ -48,14 +50,16 @@ export class ParseTreeWalker {
     /**
      * Exits a grammar rule by first triggering the event specific to the given parse tree node
      * then by triggering the generic event {@link ParseTreeListener//exitEveryRule}
+     *
      * @param listener The listener responding to the trigger events
      * @param r The grammar rule containing the rule context
      */
-    exitRule(listener, r) {
+    exitRule(listener: any, r: any) {
         const ctx = r.ruleContext;
         ctx.exitRule(listener);
         listener.exitEveryRule(ctx);
     }
 }
 
+// @ts-expect-error TS(2339): Property 'DEFAULT' does not exist on type 'typeof ... Remove this comment to see the full error message
 ParseTreeWalker.DEFAULT = new ParseTreeWalker();

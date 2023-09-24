@@ -12,8 +12,8 @@ export class XPathWildcardElement extends XPathElement {
         super(XPath.WILDCARD);
     }
 
-    evaluate(t) {
-        let kids = [];
+    evaluate(t: any) {
+        const kids: any = [];
         if (this.invert) {
             // !* is weird but valid (empty)
             return kids;
@@ -22,6 +22,7 @@ export class XPathWildcardElement extends XPathElement {
         for (let i = 0; i < t.getChildCount(); i++) {
             kids.push(t.getChild(i));
         }
+
         return kids;
     }
 }

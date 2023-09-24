@@ -17,10 +17,13 @@ export class TokenStreamRewriter {
     // eslint-disable-next-line no-undef
     static DEFAULT_PROGRAM_NAME = "default";
 
+    programs: any;
+    tokens: any;
+
     /**
      * @param {CommonTokenStream} tokens The token stream to modify
      */
-    constructor(tokens) {
+    constructor(tokens: any) {
         this.tokens = tokens;
         /** @type {Map<string, Rewrites>} */
         this.programs = new Map();
@@ -35,11 +38,12 @@ export class TokenStreamRewriter {
 
     /**
      * Insert the supplied text after the specified token (or token index)
+     *
      * @param {Token | number} tokenOrIndex
      * @param {Text} text
      * @param {string} [programName]
      */
-    insertAfter(tokenOrIndex, text, programName = TokenStreamRewriter.DEFAULT_PROGRAM_NAME) {
+    insertAfter(tokenOrIndex: any, text: any, programName = TokenStreamRewriter.DEFAULT_PROGRAM_NAME) {
         /** @type {number} */
         let index;
         if (typeof tokenOrIndex === "number") {
@@ -49,18 +53,19 @@ export class TokenStreamRewriter {
         }
 
         // to insert after, just insert before next index (even if past end)
-        let rewrites = this.getProgram(programName);
-        let op = new InsertAfterOp(this.tokens, index, rewrites.length, text);
+        const rewrites = this.getProgram(programName);
+        const op = new InsertAfterOp(this.tokens, index, rewrites.length, text);
         rewrites.push(op);
     }
 
     /**
      * Insert the supplied text before the specified token (or token index)
+     *
      * @param {Token | number} tokenOrIndex
      * @param {Text} text
      * @param {string} [programName]
      */
-    insertBefore(tokenOrIndex, text, programName = TokenStreamRewriter.DEFAULT_PROGRAM_NAME) {
+    insertBefore(tokenOrIndex: any, text: any, programName = TokenStreamRewriter.DEFAULT_PROGRAM_NAME) {
         /** @type {number} */
         let index;
         if (typeof tokenOrIndex === "number") {
@@ -76,22 +81,24 @@ export class TokenStreamRewriter {
 
     /**
      * Replace the specified token with the supplied text
+     *
      * @param {Token | number} tokenOrIndex
      * @param {Text} text
      * @param {string} [programName]
      */
-    replaceSingle(tokenOrIndex, text, programName = TokenStreamRewriter.DEFAULT_PROGRAM_NAME) {
+    replaceSingle(tokenOrIndex: any, text: any, programName = TokenStreamRewriter.DEFAULT_PROGRAM_NAME) {
         this.replace(tokenOrIndex, tokenOrIndex, text, programName);
     }
 
     /**
      * Replace the specified range of tokens with the supplied text
+     *
      * @param {Token | number} from
      * @param {Token | number} to
      * @param {Text} text
      * @param {string} [programName]
      */
-    replace(from, to, text, programName = TokenStreamRewriter.DEFAULT_PROGRAM_NAME) {
+    replace(from: any, to: any, text: any, programName = TokenStreamRewriter.DEFAULT_PROGRAM_NAME) {
         if (typeof from !== "number") {
             from = from.tokenIndex;
         }
@@ -101,18 +108,19 @@ export class TokenStreamRewriter {
         if (from > to || from < 0 || to < 0 || to >= this.tokens.size) {
             throw new RangeError(`replace: range invalid: ${from}..${to}(size=${this.tokens.size})`);
         }
-        let rewrites = this.getProgram(programName);
-        let op = new ReplaceOp(this.tokens, from, to, rewrites.length, text);
+        const rewrites = this.getProgram(programName);
+        const op = new ReplaceOp(this.tokens, from, to, rewrites.length, text);
         rewrites.push(op);
     }
 
     /**
      * Delete the specified range of tokens
+     *
      * @param {number | Token} from
      * @param {number | Token} to
      * @param {string} [programName]
      */
-    delete(from, to, programName = TokenStreamRewriter.DEFAULT_PROGRAM_NAME) {
+    delete(from: any, to: any, programName = TokenStreamRewriter.DEFAULT_PROGRAM_NAME) {
         if (typeof to === "undefined") {
             to = from;
         }
@@ -123,11 +131,12 @@ export class TokenStreamRewriter {
      * @param {string} name
      * @returns {Rewrites}
      */
-    getProgram(name) {
+    getProgram(name: any) {
         let is = this.programs.get(name);
         if (is == null) {
             is = this.initializeProgram(name);
         }
+
         return is;
     }
 
@@ -135,19 +144,21 @@ export class TokenStreamRewriter {
      * @param {string} name
      * @returns {Rewrites}
      */
-    initializeProgram(name) {
-        const is = [];
+    initializeProgram(name: any) {
+        const is: any = [];
         this.programs.set(name, is);
+
         return is;
     }
 
     /**
      * Return the text from the original tokens altered per the instructions given to this rewriter
+     *
      * @param {Interval | string} [intervalOrProgram]
      * @param {string} [programName]
      * @returns {string}
      */
-    getText(intervalOrProgram, programName = TokenStreamRewriter.DEFAULT_PROGRAM_NAME) {
+    getText(intervalOrProgram: any, programName = TokenStreamRewriter.DEFAULT_PROGRAM_NAME) {
         let interval;
         if (intervalOrProgram instanceof Interval) {
             interval = intervalOrProgram;
@@ -175,19 +186,20 @@ export class TokenStreamRewriter {
             return this.tokens.getText(new Interval(start, stop)); // no instructions to execute
         }
 
-        let buf = [];
+        const buf = [];
 
         // First, optimize instruction stream
-        let indexToOp = this.reduceToSingleOperationPerIndex(rewrites);
+        const indexToOp = this.reduceToSingleOperationPerIndex(rewrites);
 
         // Walk buffer, executing instructions and emitting tokens
         let i = start;
         while (i <= stop && i < this.tokens.size) {
-            let op = indexToOp.get(i);
+            const op = indexToOp.get(i);
             indexToOp.delete(i); // remove so any left have index size-1
-            let t = this.tokens.get(i);
+            const t = this.tokens.get(i);
             if (op == null) {
                 // no operation at that index, just dump token
+                // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
                 if (t.type !== Token.EOF) {
                     buf.push(String(t.text));
                 }
@@ -218,20 +230,20 @@ export class TokenStreamRewriter {
      * @param {Rewrites} rewrites
      * @returns {Map<number, RewriteOperation>} a map from token index to operation
      */
-    reduceToSingleOperationPerIndex(rewrites) {
+    reduceToSingleOperationPerIndex(rewrites: any) {
         // WALK REPLACES
         for (let i = 0; i < rewrites.length; i++) {
-            let op = rewrites[i];
+            const op = rewrites[i];
             if (op == null) {
                 continue;
             }
             if (!(op instanceof ReplaceOp)) {
                 continue;
             }
-            let rop = op;
+            const rop = op;
             // Wipe prior inserts within range
-            let inserts = this.getKindOfOps(rewrites, InsertBeforeOp, i);
-            for (let iop of inserts) {
+            const inserts = this.getKindOfOps(rewrites, InsertBeforeOp, i);
+            for (const iop of inserts) {
                 if (iop.index === rop.index) {
                     // E.g., insert before 2, delete 2..2; update replace
                     // text to include insert before, kill insert
@@ -244,15 +256,15 @@ export class TokenStreamRewriter {
                 }
             }
             // Drop any prior replaces contained within
-            let prevReplaces = this.getKindOfOps(rewrites, ReplaceOp, i);
-            for (let prevRop of prevReplaces) {
+            const prevReplaces = this.getKindOfOps(rewrites, ReplaceOp, i);
+            for (const prevRop of prevReplaces) {
                 if (prevRop.index >= rop.index && prevRop.lastIndex <= rop.lastIndex) {
                     // delete replace as it's a no-op.
                     rewrites[prevRop.instructionIndex] = undefined;
                     continue;
                 }
                 // throw exception unless disjoint or identical
-                let disjoint =
+                const disjoint =
                     prevRop.lastIndex < rop.index || prevRop.index > rop.lastIndex;
                 // Delete special case of replace (text==null):
                 // D.i-j.u D.x-y.v	| boundaries overlap	combine to max(min)..max(right)
@@ -269,17 +281,17 @@ export class TokenStreamRewriter {
 
         // WALK INSERTS
         for (let i = 0; i < rewrites.length; i++) {
-            let op = rewrites[i];
+            const op = rewrites[i];
             if (op == null) {
                 continue;
             }
             if (!(op instanceof InsertBeforeOp)) {
                 continue;
             }
-            let iop = op;
+            const iop = op;
             // combine current insert with prior if any at same index
-            let prevInserts = this.getKindOfOps(rewrites, InsertBeforeOp, i);
-            for (let prevIop of prevInserts) {
+            const prevInserts = this.getKindOfOps(rewrites, InsertBeforeOp, i);
+            for (const prevIop of prevInserts) {
                 if (prevIop.index === iop.index) {
                     if (prevIop instanceof InsertAfterOp) {
                         iop.text = this.catOpText(prevIop.text, iop.text);
@@ -295,8 +307,8 @@ export class TokenStreamRewriter {
                 }
             }
             // look for replaces where iop.index is in range; error
-            let prevReplaces = this.getKindOfOps(rewrites, ReplaceOp, i);
-            for (let rop of prevReplaces) {
+            const prevReplaces = this.getKindOfOps(rewrites, ReplaceOp, i);
+            for (const rop of prevReplaces) {
                 if (iop.index === rop.index) {
                     rop.text = this.catOpText(iop.text, rop.text);
                     rewrites[i] = undefined;	// delete current insert
@@ -309,8 +321,8 @@ export class TokenStreamRewriter {
         }
 
         /** @type {Map<number, RewriteOperation>} */
-        let m = new Map();
-        for (let op of rewrites) {
+        const m = new Map();
+        for (const op of rewrites) {
             if (op == null) {
                 // ignore deleted ops
                 continue;
@@ -320,6 +332,7 @@ export class TokenStreamRewriter {
             }
             m.set(op.index, op);
         }
+
         return m;
     }
 
@@ -328,7 +341,7 @@ export class TokenStreamRewriter {
      * @param {Text} b
      * @returns {string}
      */
-    catOpText(a, b) {
+    catOpText(a: any, b: any) {
         let x = "";
         let y = "";
         if (a != null) {
@@ -337,28 +350,34 @@ export class TokenStreamRewriter {
         if (b != null) {
             y = b.toString();
         }
+
         return x + y;
     }
 
     /**
      * Get all operations before an index of a particular kind
+     *
      * @param {Rewrites} rewrites
      * @param {any} kind
      * @param {number} before
      */
-    getKindOfOps(rewrites, kind, before) {
-        return rewrites.slice(0, before).filter(op => op && op instanceof kind);
+    getKindOfOps(rewrites: any, kind: any, before: any) {
+        return rewrites.slice(0, before).filter((op: any) => {return op && op instanceof kind;});
     }
 }
 
 class RewriteOperation {
+    index: any;
+    instructionIndex: any;
+    text: any;
+    tokens: any;
     /**
      * @param {CommonTokenStream} tokens
      * @param {number} index
      * @param {number} instructionIndex
      * @param {Text} text
      */
-    constructor(tokens, index, instructionIndex, text) {
+    constructor(tokens: any, index: any, instructionIndex: any, text: any) {
         this.tokens = tokens;
         this.instructionIndex = instructionIndex;
         this.index = index;
@@ -369,19 +388,23 @@ class RewriteOperation {
         let opName = this.constructor.name;
         const $index = opName.indexOf("$");
         opName = opName.substring($index + 1, opName.length);
+
         return "<" + opName + "@" + this.tokens.get(this.index) +
             ":\"" + this.text + "\">";
     }
 }
 
 class InsertBeforeOp extends RewriteOperation {
+    index: any;
+    text: any;
+    tokens: any;
     /**
      * @param {CommonTokenStream} tokens
      * @param {number} index
      * @param {number} instructionIndex
      * @param {Text} text
      */
-    constructor(tokens, index, instructionIndex, text) {
+    constructor(tokens: any, index: any, instructionIndex: any, text: any) {
         super(tokens, index, instructionIndex, text);
     }
 
@@ -389,14 +412,16 @@ class InsertBeforeOp extends RewriteOperation {
      * @param {string[]} buf
      * @returns {number} the index of the next token to operate on
      */
-    execute(buf) {
+    execute(buf: any) {
         if (this.text) {
             buf.push(this.text.toString());
         }
 
+        // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
         if (this.tokens.get(this.index).type !== Token.EOF) {
             buf.push(String(this.tokens.get(this.index).text));
         }
+
         return this.index + 1;
     }
 }
@@ -408,12 +433,16 @@ class InsertAfterOp extends InsertBeforeOp {
      * @param {number} instructionIndex
      * @param {Text} text
      */
-    constructor(tokens, index, instructionIndex, text) {
+    constructor(tokens: any, index: any, instructionIndex: any, text: any) {
         super(tokens, index + 1, instructionIndex, text); // insert after is insert before index+1
     }
 }
 
 class ReplaceOp extends RewriteOperation {
+    index: any;
+    lastIndex: any;
+    text: any;
+    tokens: any;
     /**
      * @param {CommonTokenStream} tokens
      * @param {number} from
@@ -421,7 +450,7 @@ class ReplaceOp extends RewriteOperation {
      * @param {number} instructionIndex
      * @param {Text} text
      */
-    constructor(tokens, from, to, instructionIndex, text) {
+    constructor(tokens: any, from: any, to: any, instructionIndex: any, text: any) {
         super(tokens, from, instructionIndex, text);
         this.lastIndex = to;
     }
@@ -430,10 +459,11 @@ class ReplaceOp extends RewriteOperation {
      * @param {string[]} buf
      * @returns {number} the index of the next token to operate on
      */
-    execute(buf) {
+    execute(buf: any) {
         if (this.text) {
             buf.push(this.text.toString());
         }
+
         return this.lastIndex + 1;
     }
 
@@ -442,6 +472,7 @@ class ReplaceOp extends RewriteOperation {
             return "<DeleteOp@" + this.tokens.get(this.index) +
                 ".." + this.tokens.get(this.lastIndex) + ">";
         }
+
         return "<ReplaceOp@" + this.tokens.get(this.index) +
             ".." + this.tokens.get(this.lastIndex) + ":\"" + this.text + "\">";
     }

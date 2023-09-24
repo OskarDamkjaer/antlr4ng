@@ -4,6 +4,10 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-export function valueToString(v) {
+/**
+ *
+ * @param v
+ */
+export function valueToString(v: any) {
     return v === null ? "null" : v;
 }

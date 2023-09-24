@@ -4,10 +4,12 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import { LexerIndexedCustomAction } from './LexerIndexedCustomAction.js';
+import { LexerIndexedCustomAction } from "./LexerIndexedCustomAction.js";
 import { HashCode } from "../misc/HashCode.js";
 
 export class LexerActionExecutor {
+    cachedHashCode: any;
+    lexerActions: any;
     /**
      * Represents an executor for a sequence of lexer actions which traversed during
      * the matching operation of a lexer rule (token).
@@ -15,14 +17,18 @@ export class LexerActionExecutor {
      * <p>The executor tracks position information for position-dependent lexer actions
      * efficiently, ensuring that actions appearing only at the end of the rule do
      * not cause bloating of the {@link DFA} created for the lexer.</p>
+     *
+     * @param lexerActions
      */
-    constructor(lexerActions) {
+    constructor(lexerActions: any) {
         this.lexerActions = lexerActions === null ? [] : lexerActions;
         /**
          * Caches the result of {@link //hashCode} since the hash code is an element
          * of the performance-critical {@link LexerATNConfig//hashCode} operation
          */
+        // @ts-expect-error TS(2554): Expected 0 arguments, but got 1.
         this.cachedHashCode = HashCode.hashStuff(lexerActions); // "".join([str(la) for la in
+
         // lexerActions]))
         return this;
     }
@@ -53,10 +59,10 @@ export class LexerActionExecutor {
      * @param offset The current offset to assign to all position-dependent
      * lexer actions which do not already have offsets assigned.
      *
-     * @return {LexerActionExecutor} A {@link LexerActionExecutor} which stores input stream offsets
+     * @returns {LexerActionExecutor} A {@link LexerActionExecutor} which stores input stream offsets
      * for all position-dependent lexer actions.
      */
-    fixOffsetBeforeMatch(offset) {
+    fixOffsetBeforeMatch(offset: any) {
         let updatedLexerActions = null;
         for (let i = 0; i < this.lexerActions.length; i++) {
             if (this.lexerActions[i].isPositionDependent &&
@@ -94,7 +100,7 @@ export class LexerActionExecutor {
      * {@link IntStream//seek} to set the {@code input} position to the beginning
      * of the token.
      */
-    execute(lexer, input, startIndex) {
+    execute(lexer: any, input: any, startIndex: any) {
         let requiresSeek = false;
         const stopIndex = input.index;
         try {
@@ -122,11 +128,11 @@ export class LexerActionExecutor {
         return this.cachedHashCode;
     }
 
-    updateHashCode(hash) {
+    updateHashCode(hash: any) {
         hash.update(this.cachedHashCode);
     }
 
-    equals(other) {
+    equals(other: any) {
         if (this === other) {
             return true;
         } else if (!(other instanceof LexerActionExecutor)) {
@@ -142,6 +148,7 @@ export class LexerActionExecutor {
                     return false;
                 }
             }
+
             return true;
         }
     }
@@ -158,14 +165,15 @@ export class LexerActionExecutor {
      * @param lexerAction The lexer action to execute after the actions
      * specified in {@code lexerActionExecutor}.
      *
-     * @return {LexerActionExecutor} A {@link LexerActionExecutor} for executing the combine actions
+     * @returns {LexerActionExecutor} A {@link LexerActionExecutor} for executing the combine actions
      * of {@code lexerActionExecutor} and {@code lexerAction}.
      */
-    static append(lexerActionExecutor, lexerAction) {
+    static append(lexerActionExecutor: any, lexerAction: any) {
         if (lexerActionExecutor === null) {
             return new LexerActionExecutor([lexerAction]);
         }
         const lexerActions = lexerActionExecutor.lexerActions.concat([lexerAction]);
+
         return new LexerActionExecutor(lexerActions);
     }
 }

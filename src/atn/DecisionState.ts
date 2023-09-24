@@ -7,10 +7,13 @@
 import { ATNState } from "./ATNState.js";
 
 export class DecisionState extends ATNState {
+    decision: any;
+    nonGreedy: any;
     constructor() {
         super();
         this.decision = -1;
         this.nonGreedy = false;
+
         return this;
     }
 }

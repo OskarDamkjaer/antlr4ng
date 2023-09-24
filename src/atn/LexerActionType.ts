@@ -20,5 +20,5 @@ export const LexerActionType = {
     //The type of a {@link LexerSkipAction} action.
     SKIP: 6,
     //The type of a {@link LexerTypeAction} action.
-    TYPE: 7
+    TYPE: 7,
 };

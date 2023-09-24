@@ -35,9 +35,8 @@ import { DefaultErrorStrategy } from "./DefaultErrorStrategy.js";
  * {@code myparser.setErrorHandler(new BailErrorStrategy());}</p>
  *
  * @see Parser//setErrorHandler(ANTLRErrorStrategy)
- * */
+ */
 export class BailErrorStrategy extends DefaultErrorStrategy {
-
     constructor() {
         super();
     }
@@ -47,26 +46,32 @@ export class BailErrorStrategy extends DefaultErrorStrategy {
      * in a {@link ParseCancellationException} so it is not caught by the
      * rule function catches. Use {@link Exception//getCause()} to get the
      * original {@link RecognitionException}.
+     *
+     * @param recognizer
+     * @param e
      */
-    recover(recognizer, e) {
+    recover(recognizer: any, e: any) {
         let context = recognizer._ctx;
         while (context !== null) {
             context.exception = e;
             context = context.parent;
         }
+        // @ts-expect-error TS(2554): Expected 0 arguments, but got 1.
         throw new ParseCancellationException(e);
     }
 
     /**
      * Make sure we don't attempt to recover inline; if the parser
      * successfully recovers, it won't throw an exception.
+     *
+     * @param recognizer
      */
-    recoverInline(recognizer) {
+    recoverInline(recognizer: any) {
         this.recover(recognizer, new InputMismatchException(recognizer));
     }
 
     // Make sure we don't attempt to recover from problems in subrules.//
-    sync(recognizer) {
+    sync(recognizer: any) {
         // pass
     }
 }

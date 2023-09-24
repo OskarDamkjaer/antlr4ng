@@ -10,14 +10,17 @@ import { standardHashCodeFunction } from "../utils/standardHashCodeFunction.js";
 const HASH_KEY_PREFIX = "h-";
 
 export class HashMap {
+    data: any;
+    equalsFunction: any;
+    hashFunction: any;
 
-    constructor(hashFunction, equalsFunction) {
+    constructor(hashFunction: any, equalsFunction: any) {
         this.data = {};
         this.hashFunction = hashFunction || standardHashCodeFunction;
         this.equalsFunction = equalsFunction || standardEqualsFunction;
     }
 
-    set(key, value) {
+    set(key: any, value: any) {
         const hashKey = HASH_KEY_PREFIX + this.hashFunction(key);
         if (hashKey in this.data) {
             const entries = this.data[hashKey];
@@ -26,61 +29,68 @@ export class HashMap {
                 if (this.equalsFunction(key, entry.key)) {
                     const oldValue = entry.value;
                     entry.value = value;
+
                     return oldValue;
                 }
             }
-            entries.push({ key: key, value: value });
+            entries.push({ key, value });
+
             return value;
         } else {
-            this.data[hashKey] = [{ key: key, value: value }];
+            this.data[hashKey] = [{ key, value }];
+
             return value;
         }
     }
 
-    containsKey(key) {
+    containsKey(key: any) {
         const hashKey = HASH_KEY_PREFIX + this.hashFunction(key);
         if (hashKey in this.data) {
             const entries = this.data[hashKey];
             for (let i = 0; i < entries.length; i++) {
                 const entry = entries[i];
                 if (this.equalsFunction(key, entry.key))
-                    return true;
+                    {return true;}
             }
         }
+
         return false;
     }
 
-    get(key) {
+    get(key: any) {
         const hashKey = HASH_KEY_PREFIX + this.hashFunction(key);
         if (hashKey in this.data) {
             const entries = this.data[hashKey];
             for (let i = 0; i < entries.length; i++) {
                 const entry = entries[i];
                 if (this.equalsFunction(key, entry.key))
-                    return entry.value;
+                    {return entry.value;}
             }
         }
+
         return null;
     }
 
     entries() {
-        return Object.keys(this.data).filter(key => key.startsWith(HASH_KEY_PREFIX)).flatMap(key => this.data[key], this);
+        // @ts-expect-error TS(2550): Property 'flatMap' does not exist on type 'string[... Remove this comment to see the full error message
+        return Object.keys(this.data).filter((key) => {return key.startsWith(HASH_KEY_PREFIX);}).flatMap((key: any) => {return this.data[key];}, this);
     }
 
     getKeys() {
-        return this.entries().map(e => e.key);
+        return this.entries().map((e: any) => {return e.key;});
     }
 
     getValues() {
-        return this.entries().map(e => e.value);
+        return this.entries().map((e: any) => {return e.value;});
     }
 
     toString() {
-        const ss = this.entries().map(e => '{' + e.key + ':' + e.value + '}');
-        return '[' + ss.join(", ") + ']';
+        const ss = this.entries().map((e: any) => {return "{" + e.key + ":" + e.value + "}";});
+
+        return "[" + ss.join(", ") + "]";
     }
 
     get length() {
-        return Object.keys(this.data).filter(key => key.startsWith(HASH_KEY_PREFIX)).map(key => this.data[key].length, this).reduce((accum, item) => accum + item, 0);
+        return Object.keys(this.data).filter((key) => {return key.startsWith(HASH_KEY_PREFIX);}).map((key) => {return this.data[key].length;}, this).reduce((accum, item) => {return accum + item;}, 0);
     }
 }

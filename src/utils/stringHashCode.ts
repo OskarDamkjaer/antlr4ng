@@ -6,16 +6,20 @@
 
 export const StringSeedHashCode = Math.round(Math.random() * Math.pow(2, 32));
 
-export function stringHashCode(value) {
+/**
+ *
+ * @param value
+ */
+export function stringHashCode(value: any) {
     if (!value) {
         return 0;
     }
     const type = typeof value;
-    const key = type === 'string' ? value : type === 'object' && value.toString ? value.toString() : false;
+    const key = type === "string" ? value : type === "object" && value.toString ? value.toString() : false;
     if (!key) {
         return 0;
     }
-    let h1b, k1;
+    let h1b; let k1;
 
     const remainder = key.length & 3; // key.length % 4
     const bytes = key.length - remainder;

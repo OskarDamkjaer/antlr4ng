@@ -24,13 +24,13 @@ export class ConsoleErrorListener extends BaseErrorListener {
         super();
     }
 
-    syntaxError(recognizer, offendingSymbol, line, column, msg, e) {
+    syntaxError(recognizer: any, offendingSymbol: any, line: any, column: any, msg: any, e: any) {
         console.error("line " + line + ":" + column + " " + msg);
     }
 }
 
-
 /**
  * Provides a default instance of {@link ConsoleErrorListener}.
  */
+// @ts-expect-error TS(2339): Property 'INSTANCE' does not exist on type 'typeof... Remove this comment to see the full error message
 ConsoleErrorListener.INSTANCE = new ConsoleErrorListener();
