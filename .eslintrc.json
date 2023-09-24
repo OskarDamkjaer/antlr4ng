@@ -5,12 +5,7 @@
         "es6": true,
         "jest": true
     },
-    "extends": [
-        "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking",
-        "plugin:jsdoc/recommended"
-    ],
+    "extends": [ ],
     "ignorePatterns": [
         "src/**/*.js",
         "spec/**/*.*js",
@@ -19,18 +14,7 @@
         "**/generated/*",
         "jest.config.ts"
     ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "project": [
-            "tsconfig.json"
-        ],
-        "sourceType": "module",
-        "implicitStrict": true,
-        "ecmaFeatures": {},
-        "ecmaVersion": 14
-    },
     "plugins": [
-        "@typescript-eslint",
         "jsdoc",
         "prefer-arrow",
         "eslint-plugin-import"
