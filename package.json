@@ -33,8 +33,9 @@
         "eslint-plugin-prefer-arrow": "1.2.3",
         "jasmine": "5.1.0",
         "jasmine-spec-reporter": "7.0.0",
+        "ts-migrate": "^0.1.35",
         "ts-node": "10.9.1",
-        "typescript": "5.2.2"
+        "typescript": "^5.2.2"
     },
     "scripts": {
         "prepublishOnly": "npm run build && npm run test",
