@@ -1,0 +1,453 @@
+/*
+ * Copyright (c) The ANTLR Project. All rights reserved.
+ * Use of this file is governed by the BSD 3-clause license that
+ * can be found in the LICENSE.txt file in the project root.
+ */
+
+import { Token } from "./Token.js";
+import { Lexer } from "./Lexer.js";
+import { Interval } from "./misc/Interval.js";
+import { TokenStream } from "./TokenStream.js";
+
+/**
+ * This implementation of {@link TokenStream} loads tokens from a
+ * {@link TokenSource} on-demand, and places the tokens in a buffer to provide
+ * access to any previous token by index.
+ *
+ * <p>
+ * This token stream ignores the value of {@link Token//getChannel}. If your
+ * parser requires the token stream filter tokens to only those on a particular
+ * channel, such as {@link Token//DEFAULT_CHANNEL} or
+ * {@link Token//HIDDEN_CHANNEL}, use a filtering token stream such a
+ * {@link CommonTokenStream}.</p>
+ */
+export class BufferedTokenStream extends TokenStream {
+    _index: any;
+    channel: any;
+    fetchedEOF: any;
+    tokenSource: any;
+    tokens: any;
+    constructor(tokenSource: any) {
+
+        super();
+        // The {@link TokenSource} from which tokens for this stream are fetched.
+        this.tokenSource = tokenSource;
+        /**
+         * A collection of all tokens fetched from the token source. The list is
+         * considered a complete view of the input once {@link //fetchedEOF} is set
+         * to {@code true}.
+         */
+        this.tokens = [];
+
+        /**
+         * The index into {@link //tokens} of the current token (next token to
+         * {@link //consume}). {@link //tokens}{@code [}{@link //p}{@code ]} should
+         * be
+         * {@link //LT LT(1)}.
+         *
+         * <p>This field is set to -1 when the stream is first constructed or when
+         * {@link //setTokenSource} is called, indicating that the first token has
+         * not yet been fetched from the token source. For additional information,
+         * see the documentation of {@link IntStream} for a description of
+         * Initializing Methods.</p>
+         */
+        this._index = -1;
+
+        /**
+         * Indicates whether the {@link Token//EOF} token has been fetched from
+         * {@link //tokenSource} and added to {@link //tokens}. This field improves
+         * performance for the following cases:
+         *
+         * <ul>
+         * <li>{@link //consume}: The lookahead check in {@link //consume} to
+         * prevent
+         * consuming the EOF symbol is optimized by checking the values of
+         * {@link //fetchedEOF} and {@link //p} instead of calling {@link
+         * //LA}.</li>
+         * <li>{@link //fetch}: The check to prevent adding multiple EOF symbols
+         * into
+         * {@link //tokens} is trivial with this field.</li>
+         * <ul>
+         */
+        this.fetchedEOF = false;
+    }
+
+    mark() {
+        return 0;
+    }
+
+    release(marker: any) {
+        // no resources to release
+    }
+
+    reset() {
+        this.seek(0);
+    }
+
+    seek(index: any) {
+        this.lazyInit();
+        this._index = this.adjustSeekIndex(index);
+    }
+
+    get size() {
+        return this.tokens.length;
+    }
+
+    get index() {
+        return this._index;
+    }
+
+    get(index: any) {
+        this.lazyInit();
+
+        return this.tokens[index];
+    }
+
+    consume() {
+        let skipEofCheck = false;
+        if (this._index >= 0) {
+            if (this.fetchedEOF) {
+                // the last token in tokens is EOF. skip check if p indexes any
+                // fetched token except the last.
+                skipEofCheck = this._index < this.tokens.length - 1;
+            } else {
+                // no EOF token in tokens. skip check if p indexes a fetched token.
+                skipEofCheck = this._index < this.tokens.length;
+            }
+        } else {
+            // not yet initialized
+            skipEofCheck = false;
+        }
+        // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
+        if (!skipEofCheck && this.LA(1) === Token.EOF) {
+            throw "cannot consume EOF";
+        }
+        if (this.sync(this._index + 1)) {
+            this._index = this.adjustSeekIndex(this._index + 1);
+        }
+    }
+
+    /**
+     * Make sure index {@code i} in tokens has a token.
+     *
+     * @param i
+     * @returns {boolean} {@code true} if a token is located at index {@code i}, otherwise
+     * {@code false}.
+     * @see //get(int i)
+     */
+    sync(i: any) {
+        const n = i - this.tokens.length + 1; // how many more elements we need?
+        if (n > 0) {
+            const fetched = this.fetch(n);
+
+            return fetched >= n;
+        }
+
+        return true;
+    }
+
+    /**
+     * Add {@code n} elements to buffer.
+     *
+     * @param n
+     * @returns {number} The actual number of elements added to the buffer.
+     */
+    fetch(n: any) {
+        if (this.fetchedEOF) {
+            return 0;
+        }
+        for (let i = 0; i < n; i++) {
+            const t = this.tokenSource.nextToken();
+            t.tokenIndex = this.tokens.length;
+            this.tokens.push(t);
+            // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
+            if (t.type === Token.EOF) {
+                this.fetchedEOF = true;
+
+                return i + 1;
+            }
+        }
+
+        return n;
+    }
+
+    // Get all tokens from start..stop inclusively///
+    getTokens(start: any, stop: any, types: any) {
+        this.lazyInit();
+
+        if (start === undefined && stop === undefined) {
+            return this.tokens;
+        }
+
+        if (stop === undefined) {
+            stop = this.tokens.length - 1;
+        }
+
+        if (start < 0 || stop >= this.tokens.length || stop < 0 || start >= this.tokens.length) {
+            throw new RangeError("start " + start + " or stop " + stop + " not in 0.." + (this.tokens.length - 1));
+        }
+
+        if (start > stop) {
+            return [];
+        }
+
+        if (types === undefined) {
+            return this.tokens.slice(start, stop + 1);
+        }
+
+        const subset = [];
+        if (stop >= this.tokens.length) {
+            stop = this.tokens.length - 1;
+        }
+
+        for (let i = start; i < stop; i++) {
+            const t = this.tokens[i];
+            // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
+            if (t.type === Token.EOF) {
+                subset.push(t); // Also include EOF.
+                break;
+            }
+
+            if (types.contains(t.type)) {
+                subset.push(t);
+            }
+        }
+
+        return subset;
+    }
+
+    LA(i: any) {
+        return this.LT(i).type;
+    }
+
+    LB(k: any) {
+        if (this._index - k < 0) {
+            return null;
+        }
+
+        return this.tokens[this._index - k];
+    }
+
+    LT(k: any) {
+        this.lazyInit();
+        if (k === 0) {
+            return null;
+        }
+        if (k < 0) {
+            return this.LB(-k);
+        }
+        const i = this._index + k - 1;
+        this.sync(i);
+        if (i >= this.tokens.length) { // return EOF token
+            // EOF must be last token
+            return this.tokens[this.tokens.length - 1];
+        }
+
+        return this.tokens[i];
+    }
+
+    /**
+     * Allowed derived classes to modify the behavior of operations which change
+     * the current stream position by adjusting the target token index of a seek
+     * operation. The default implementation simply returns {@code i}. If an
+     * exception is thrown in this method, the current stream index should not be
+     * changed.
+     *
+     * <p>For example, {@link CommonTokenStream} overrides this method to ensure
+     * that
+     * the seek target is always an on-channel token.</p>
+     *
+     * @param {number} i The target token index.
+     * @returns {number} The adjusted target token index.
+     */
+    adjustSeekIndex(i: any) {
+        return i;
+    }
+
+    lazyInit() {
+        if (this._index === -1) {
+            this.setup();
+        }
+    }
+
+    setup() {
+        this.sync(0);
+        this._index = this.adjustSeekIndex(0);
+    }
+
+    // Reset this token stream by setting its token source.///
+    setTokenSource(tokenSource: any) {
+        this.tokenSource = tokenSource;
+        this.tokens = [];
+        this._index = -1;
+        this.fetchedEOF = false;
+    }
+
+    getTokenSource() {
+        return this.tokenSource;
+    }
+
+    /**
+     * Given a starting index, return the index of the next token on channel.
+     * Return i if tokens[i] is on channel. Return -1 if there are no tokens
+     * on channel between i and EOF.
+     *
+     * @param i
+     * @param channel
+     */
+    nextTokenOnChannel(i: any, channel: any) {
+        this.sync(i);
+        if (i >= this.tokens.length) {
+            return -1;
+        }
+        let token = this.tokens[i];
+        while (token.channel !== this.channel) {
+            // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
+            if (token.type === Token.EOF) {
+                return -1;
+            }
+            i += 1;
+            this.sync(i);
+            token = this.tokens[i];
+        }
+
+        return i;
+    }
+
+    /**
+     * Given a starting index, return the index of the previous token on channel.
+     * Return i if tokens[i] is on channel. Return -1 if there are no tokens
+     * on channel between i and 0.
+     *
+     * @param i
+     * @param channel
+     */
+    previousTokenOnChannel(i: any, channel: any) {
+        while (i >= 0 && this.tokens[i].channel !== channel) {
+            i -= 1;
+        }
+
+        return i;
+    }
+
+    /**
+     * Collect all tokens on specified channel to the right of
+     * the current token up until we see a token on DEFAULT_TOKEN_CHANNEL or
+     * EOF. If channel is -1, find any non default channel token.
+     *
+     * @param tokenIndex
+     * @param channel
+     */
+    getHiddenTokensToRight(tokenIndex: any,
+        channel: any) {
+        if (channel === undefined) {
+            channel = -1;
+        }
+        this.lazyInit();
+        if (tokenIndex < 0 || tokenIndex >= this.tokens.length) {
+            // @ts-expect-error TS(2362): The left-hand side of an arithmetic operation must... Remove this comment to see the full error message
+            throw "" + tokenIndex + " not in 0.." + this.tokens.length - 1;
+        }
+        // @ts-expect-error TS(2339): Property 'DEFAULT_TOKEN_CHANNEL' does not exist on... Remove this comment to see the full error message
+        const nextOnChannel = this.nextTokenOnChannel(tokenIndex + 1, Lexer.DEFAULT_TOKEN_CHANNEL);
+        const from_ = tokenIndex + 1;
+        // if none onchannel to right, nextOnChannel=-1 so set to = last token
+        const to = nextOnChannel === -1 ? this.tokens.length - 1 : nextOnChannel;
+
+        return this.filterForChannel(from_, to, channel);
+    }
+
+    /**
+     * Collect all tokens on specified channel to the left of
+     * the current token up until we see a token on DEFAULT_TOKEN_CHANNEL.
+     * If channel is -1, find any non default channel token.
+     *
+     * @param tokenIndex
+     * @param channel
+     */
+    getHiddenTokensToLeft(tokenIndex: any,
+        channel: any) {
+        if (channel === undefined) {
+            channel = -1;
+        }
+        this.lazyInit();
+        if (tokenIndex < 0 || tokenIndex >= this.tokens.length) {
+            // @ts-expect-error TS(2362): The left-hand side of an arithmetic operation must... Remove this comment to see the full error message
+            throw "" + tokenIndex + " not in 0.." + this.tokens.length - 1;
+        }
+        // @ts-expect-error TS(2339): Property 'DEFAULT_TOKEN_CHANNEL' does not exist on... Remove this comment to see the full error message
+        const prevOnChannel = this.previousTokenOnChannel(tokenIndex - 1, Lexer.DEFAULT_TOKEN_CHANNEL);
+        if (prevOnChannel === tokenIndex - 1) {
+            return null;
+        }
+        // if none on channel to left, prevOnChannel=-1 then from=0
+        const from_ = prevOnChannel + 1;
+        const to = tokenIndex - 1;
+
+        return this.filterForChannel(from_, to, channel);
+    }
+
+    filterForChannel(left: any, right: any, channel: any) {
+        const hidden = [];
+        for (let i = left; i < right + 1; i++) {
+            const t = this.tokens[i];
+            if (channel === -1) {
+                // @ts-expect-error TS(2339): Property 'DEFAULT_TOKEN_CHANNEL' does not exist on... Remove this comment to see the full error message
+                if (t.channel !== Lexer.DEFAULT_TOKEN_CHANNEL) {
+                    hidden.push(t);
+                }
+            } else if (t.channel === channel) {
+                hidden.push(t);
+            }
+        }
+        if (hidden.length === 0) {
+            return null;
+        }
+
+        return hidden;
+    }
+
+    getSourceName() {
+        return this.tokenSource.sourceName;
+    }
+
+    // Get the text of all tokens in this buffer.///
+    getText(interval: any) {
+        this.lazyInit();
+        this.fill();
+        if (!interval) {
+            interval = new Interval(0, this.tokens.length - 1);
+        }
+        let start = interval.start;
+        if (start instanceof Token) {
+            start = start.tokenIndex;
+        }
+        let stop = interval.stop;
+        if (stop instanceof Token) {
+            stop = stop.tokenIndex;
+        }
+        if (start === null || stop === null || start < 0 || stop < 0) {
+            return "";
+        }
+        if (stop >= this.tokens.length) {
+            stop = this.tokens.length - 1;
+        }
+        let s = "";
+        for (let i = start; i < stop + 1; i++) {
+            const t = this.tokens[i];
+            // @ts-expect-error TS(2339): Property 'EOF' does not exist on type 'typeof Toke... Remove this comment to see the full error message
+            if (t.type === Token.EOF) {
+                break;
+            }
+            s = s + t.text;
+        }
+
+        return s;
+    }
+
+    // Get all tokens from lexer until EOF///
+    fill() {
+        this.lazyInit();
+        while (this.fetch(1000) === 1000){;}
+    }
+}
